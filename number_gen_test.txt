@@ -1,0 +1,3 @@
+r = [ [">" , 0] , [ "!=" , 5] , ["divisible",10]]
+i = [ "<",10000]
+x = TablesController.new.generate_value_pair_integer(i,r)

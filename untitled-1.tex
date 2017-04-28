@@ -1,0 +1,175 @@
+\documentclass{article}
+
+\usepackage{graphicx}
+\usepackage{booktabs}
+
+\title{AutoRSpec}
+\date{2017-04-25}
+\author{Dan Shreeve}
+
+\begin{document}
+
+\pagenumbering{roman}
+\addcontentsline{toc}{section}{Title page}
+\maketitle
+
+\newpage
+\addcontentsline{toc}{section}{Signed declaration}
+\section*{Signed declaration}
+All sentences or passages quoted in this report from other people's work have been specifically acknowledged by clear cross-referencing to author, work and page(s). Any illustrations which are not the work of the author of this report have been used with the explicit permission of the originator and are specifically acknowledged. I understand that failure to do this amounts to plagiarism and will be considered grounds for failure in this project and the degree examination as a whole.
+\par Name: Daniel Demaine Shreeve
+\par Signature: .................................
+\par Date: 03/05/2017
+
+\newpage
+\addcontentsline{toc}{section}{Abstract}
+\begin{abstract}
+All sentences or passages quoted in this report from other people's work have been specifically acknowledged by clear cross-referencing to author, work and page(s). Any illustrations which are not the work of the author of this report have been used with the explicit permission of the originator and are specifically acknowledged. I understand that failure to do this amounts to plagiarism and will be considered grounds for failure in this project and the degree examination as a whole.
+\par All sentences or passages quoted in this report from other people's work have been specifically acknowledged by clear cross-referencing to author, work and page(s). Any illustrations which are not the work of the author of this report have been used with the explicit permission of the originator and are specifically acknowledged. I understand that failure to do this amounts to plagiarism and will be considered grounds for failure in this project and the degree examination as a whole.
+\par All sentences or passages quoted in this report from other people's work have been specifically acknowledged by clear cross-referencing to author, work and page(s). Any illustrations which are not the work of the author of this report have been used with the explicit permission of the originator and are specifically acknowledged. I understand that failure to do this amounts to plagiarism and will be considered grounds for failure in this project and the degree examination as a whole.
+\end{abstract}
+
+\newpage
+\addcontentsline{toc}{section}{Acknowledgements}
+\section*{Acknowledgements}
+First and foremost I would like to thank my supervisor \textbf{Dr. Gordon Fraser} for accepting my proposed project and providing impeccable advice and guidance throughout the process.
+\par{\noindent} Finally I would like to thank my parents, \textbf{Linda Shreeve} and \textbf{Paul Shreeve}, and my grandparents \textbf{Elsie Marsden} and \textbf{Ray Marsden} for giving me the oppurtunity to go to university and supporting me throughout.
+
+\newpage
+\tableofcontents
+
+\newpage	
+\pagenumbering{arabic}
+\section{Chapter 1: Introduction}
+
+
+\subsection{Importance of testing}
+
+\par How severe can the consequences be from an error in a piece of software? In 1983 a bug in a piece of software nearly started world war three.
+
+\par During the Cold War, 1983, tensions between the US and Soviet Russia were extremely high. A Soviet early warning system had detected the launch of 5 ballistic missiles from the US. The only reason that Russai did not retaliate, starting World War Three was the fact that Lt Col Stanislav Petrov had a "...funny feeling in my gut" and concluded that if the US was launching a full scale attack they would launch more than 5 missiles. The error in the software was discovered to be a bug in the part of the software that distinguished false missiles from satellites picking up the reflection of sunlight from the top of clouds.\cite{ZDNetDisasters} If the bug in the code has falsey detected more missiles the world could be a very differn't place.
+
+\par The European Space Agency spent 10 years and \$7 billion designing and constructing the Ariane 5, a rocket that can launch multiple satellites into orbit from a single launch. 39 seconds into its maiden voyage it exploded, destroying the Ariane 5 and its contents of 4 uninsured, extremley expensive scientific sattelites. The explosion was caused by its own self-destruction sequence which was triggered automatically as the boosters were being torn away by aerodynamic forces. The extreme aerodynamic forces were caused by the rocket trying to recorrect its course due to flight data provided the guidance system. The guidance system had crashed and shutdown, along with its backup, the flight data provided that caused the rocket to readjust its course was actually a diagnostic error message. The cause of the shutdown was the guidance system trying to convert the sideways velocity of the rocket from 64-bit to 16-bit where an overflow occured causing the system to shutdown. To make matters worse, the programmers were aware that it could overflow but that particular variable would never be large enough as it was used to prepare for launch and not in flight. However it was decided the system should run into the first 40 seconds of flight incase of breif hold in launch countdown to make restarting the system easier. A known flaw in a system, that could of been handled ended up causing the chain of events that led to the rocket exploding.\cite{Ariane5}
+
+\par  Software disasters are caused by three main reasons. Poor software project management, poor risk assessment and poor development and testing practices.\cite{mcquaid2012software} Software testing is therefor extremely prevlent and has upmost importance as it can prevent World War and save companies alot of money.
+
+
+\subsection{Benefits of testing and automation}
+
+\par Inadequate software testing infastructure was estimated to cost the US economy \$59.5 billion a year.\cite{NISTReport} It was also estimated that the potentail cost reduction from feasbile infastructure would be \$22.2 billion a year. \cite{NISTReport} Due to software disasters and the vast amount of money that can be saved and also avoid incurring people have become more aware of the importance of testing. The benefits that this saving comes from is the increased reliabilty and quality of the product produced when software testing is implemented.
+
+\par "In a typical programming project approximately 50 percent of the elapsed time and more than 50 percent of the total cost were expended in testing the program or system being developed"\cite{myers2011art}. Software testing saves you alot of money but also costs alot of money. By automating part or the whole process the costs can be reduced while still obtaining all of the benefits.
+
+\subsection{What is AutoRSpec}
+
+\par AutoRSpec is a piece of software that will automatically generate RSpec test cases that test model validation in Ruby on Rails Applications. The User will specify there tables and assign properties to fields, maximum length of 5, using a web interface. Once a table is defined the user will be able to generate and download a file that will test all the properties defined using randomly generated values. 
+
+\par Rails and its do more with less, inline with automated testing..
+
+\par The aims of the project are to:
+\begin{enumerate}
+\item Reduce the amount of time it takes for a User to produce tests for model validation
+\item Produce tests that are of high readable quality
+\item Produce tests that fully test properties specified
+\item The process should be hassle free
+\end{enumerate}
+
+\par Challenges that the project faces are
+\begin{enumerate}
+\item Identifying the minimum information required to produce tests
+\item Creating a process that is hassle free
+\item Natural language in tests that is appears human written
+\item Generating the tests in an acceptable time frame
+\item Building an efficent database structure for the information
+\end{enumerate}
+
+
+\section{Chapter 2: Literature Review and Research}
+
+\subsection{Tools to use}
+\par The main requirements for choosing what tools to use to build the application are:
+\begin{enumerate}
+\item Allowing a User to enter information onto a database
+\item Allowing a User to view information on the database
+\item A system that can process the information and generate Test cases
+\end{enumerate}
+\par An MVC web application fits all these criteria while providing additional benefits. MVC, Model-View-Controller is an architectural pattern that seperates an application into three interconnected parts. The separation allows for responsibilities to be allocated independently to each component, seperating the logic from the user. The model is responsible for the data of the application and the rules and logic used to create and update the information. The view is responsible for displaying the data and possible interactions with the system to the user. The controller is responsible for controlling the flow of the system,  accepting user input and converting it into commands for the model and view.
+\par An example of the components interacting would be creating an entry to a database. The view would be responsible for displaying the form in which to fill in. On submission the controller will process the information, ensure only persmissable information is submitted and enter additional information, then send it to the model. The model would verify the structure of the information, correct fields are present and cohere with its rules. The model will then notify the controller if the submission was successful or not and the controller will update the view to reflect the status.
+\par The seperation means that all user interaction with the database has to be verified by the controller. This provides a high level of security as each action is controlled and the internal structure and representation of the information within the database is hidden. Simultaneous development is also possible due to the seperation of the components, work on the front and back end concurrently. Although I will not be able to get the full benefit of this as I am developing the project solo, it will allow me to shift focus as components do not need to finished before switching to another, giving greater flexibility in development. 
+\par High levels of cohesion are inherited automatically from the architecture with the grouping of logically similar elements, this makes the code easier to read and creates a more natural flow within the source code. There are however some drawbacks to MVC architecture, they are inheritly more complex due to the seperation and the framework must be learnt in addition to the programming language it is in, which there can be multiple languages between the components. This steep learning curve could mean a large initail investment into a team learning a new framework along with its languages.
+\par MVC web application frameworks have become extremely popular and are behind some of the most used and powerful websites. Django an MTV, follows MVC architecture but its creators decided to rename the components \cite{Django} to better suit them, is behind the two most visted websites in the world Google and YouTube\cite{SHUUP}\cite{Alexa}. Ruby on Rails another MVC is behind Twitter, Airbnb and Soundcloud.\cite{Coderfactory} MVC frameworks are known for their scalablity, being suitable for the smallest to the largest projects. However FaceBook decided that its scalablity had reached its limit, that adding new features made the code exponentailly more complex.\cite{Infoq} My project will be no where near the scale of facebooks sourcecode so I do not need to worry about reaching the end of its scalibilty.
+\par The chosen MVC to construct the project in is Ruby on Rails. I have done previous projects in both Ruby and the Rails framework, also the novelty of contstructing the software in the software that its output will test.
+\par Ruby was selected as the primary programming language by default as it is the language that runs Ruby On Rails. Ruby is a dynamic, multi-paradigm programming language. The paradigms consist of Object-oriented, Imperative, Functional and Reflective making it a very powerful and versatile language. This combination is from its founder ‘Yukihiro Matsumoto’ who was influenced by Perl, Smalltalk, Eiffel, Ada, and Lisp.
+\par Ruby’s primary design goal was to “make a language that he himself enjoyed using, by minimizing programmer work and possible confusion”(Ruby Wiki). Achieved with a focus on human interaction, how programmers code and design applications as opposed to focusing on how the code will run on machines. And also following the principle of least astonishment, where the behaviour of the language minimizes confusion for experienced users.
+\begin{figure}
+\includegraphics[width=\linewidth]{screenshots/c++_hello_world}
+\caption{C++ print Hello world to console}
+\label{fig:c++print}
+\end{figure}
+\begin{figure}
+\includegraphics[width=\linewidth]{screenshots/ruby_hello_world}
+\caption{Ruby print Hello world to console}
+\label{fig:rubyprint}
+\end{figure}
+\par The above two images show C++ \ref{fig:c++print} and Ruby \ref{fig:rubyprint} printing ‘Hello world’ to the console. The comparison between the two languages highlights the efficiency and simplicity of the Ruby language.Ruby on Rails projects are commonly worked on by a group of people and in multiple languages, therefore the simplistic syntax gives greater clarity and understandability to programmers who are lesser experienced in Ruby.\cite{AboutRuby}
+\par Ruby is open source, free and redistributable with a vast range of existing code from both Ruby and its large community. Primarily consisting of Gems, code packages that can be installed and supported into a project easily and with minimal effort via RubyGems, and frameworks, such as Ruby on Rails. Making it very popular for education and business. Following the DRY ‘Don't Repeat Yourself’ principle in a very effective and efficient manner.\cite{AboutRuby}
+\par Ruby was ranked ninth on TIOBE index\cite{TOBIE} and has become a very popular and respected language relative to its age among the other languages on the index. No alternatives could be considered due to the dependency of Ruby on Rails on Ruby, however Ruby is a very strong and durable language so it does not detract from the overall project.
+\par paragrpah about rails, more its specifics
+
+
+\subsection{Testing and Automation}
+\par Software testing is an investigation into a piece of software that provides information during development and maintenance. A process or series of process's are carried out that are designed to make sure computer code does what it designed to do and is absent of unintended behaviour. \cite{myers2011art}The information retrived from the proccess can be used to track the progress during development against acceptance criteria. Errors and bugs detected within the code of the are immediatley known and can be handled, providing a smoother and more consistent development and maintenance flow. Software testing provides a more reliable and higher quality product when used as part of the development process.
+\par Testing can not guarantee that a program or peice of code is without errors, therefor completing testing is impossible. This is why the design of tests is vital to the integrity of the testing, making the tests as complete as possible. Given the constraints on time and cost, effective testing is simply "What subset of all possible test cases has the highest probability of detecting the most errors?"\cite{myers2011art}. Tests are designed using information about the program along with its intended behaviour. In a given environment, with proper determined input, there is an expected behaviour/output. If the code undertest does not display the desired outcome it is said to of failed the test. Design of tests is important and to design a test information is required, the information is sourced in two main ways Black Box and White Box.
+\par Black box also known as Functional Testing is the technique of creating test cases with information from the software requirements and or its design specification. The software entity under test is treated as a black box where proper inputs are fed in and outputs are observed with no concern to the actual structure of the code. Black box testing can detect some behaviours that white box cannot, such as absent behaviours that are in the requirements but not coded in.\cite{nidhra2012blackbox}\cite{young2008software}
+\par White box testing, structural testing uses information from the physical code to produce test cases. The derivation of information makes the test more focused on the actual implementation of the code rather than its specified behaviour. Test cases tend to be at a much finer grain than black box testing individual methods. Tests are designed to execute a particular behaviour within the program, such as testing how it handles a binary overflow.\cite{nidhra2012blackbox}\cite{young2008software}
+\par As Ruby on Rails design environment can vary drastically between projects due to the flexibility of its framwork and use of Gems I will only consider Black Box testing techniues when I come to designing the project. This will deliver a product that will be usable to a wider audience as it is dependent upon on specification for which I can define. Interpreting multiple languages and being flexible enough to be useful is out of the scope of this project.
+\subsection{Testing in Rails}
+
+\subsection{Evaluation}
+
+
+\section{Chapter 3: Requirements and Analysis}
+Filler text, filler text, filler text, filler text, filler text, filler text, filler text, filler text.
+\section{Chapter 4: Design}
+Filler text, filler text, filler text, filler text, filler text, filler text, filler text, filler text.
+\section{Chapter 5: Implemention and Design}
+Filler text, filler text, filler text, filler text, filler text, filler text, filler text, filler text.
+\section{Chapter 6: Results and Discussion}
+Filler text, filler text, filler text, filler text, filler text, filler text, filler text, filler text.
+\section{Chapter 7: Conclusions}
+Filler text, filler text, filler text, filler text, filler text, filler text, filler text, filler text.
+Hello World!
+\subsection{subsection}
+Structuring a document is easy!! \cite{near2012rubicon}
+\subsubsection{subsubsection}
+\paragraph{p1}
+It's a me, Mario\footnote{\label{myfootnote}\cite{near2012rubicon}}.
+\subparagraph{sp1}
+Wwoohooo
+\section{image}
+\begin{figure}
+\includegraphics[width=\linewidth]{screenshots/code-gen-int-pre_divisible_keep_if}
+\caption{caption for image, shown below image}
+\label{fig:code1}
+\end{figure}
+Figure \ref{fig:code1} shows some savage code
+
+	
+\begin{table}[h!]
+\centering
+\caption{Caption for the table.}
+\label{tab:table1}
+\begin{tabular}{ccc}
+\toprule
+Some & actual & content\\
+\midrule
+prettifies & the & content\\
+as & well & as\\
+using & the & booktabs package\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\bibliography{bibliography}
+\bibliographystyle{ieeetr}
+\end{document}
