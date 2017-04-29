@@ -40,29 +40,17 @@ First and foremost I would like to thank my supervisor \textbf{Dr. Gordon Fraser
 \newpage	
 \pagenumbering{arabic}
 \section{Chapter 1: Introduction}
-
-
-\subsection{Importance of Testing}
-
 \par How severe can the consequences be from an error in a piece of software? In 1983 a bug in a piece of software nearly started World War Three.
 \vspace{5mm}
 \par During the Cold War, tensions between the US and Soviet Russia were extremely high. A Soviet early warning system had detected the launch of five ballistic missiles from the US. The only reason that Soviet Russia did not retaliate, starting World War Three, was the fact that Lt Col Stanislav Petrov had a "...funny feeling in my gut"\cite{ZDNetDisasters} and concluded that if the US was launching a full scale attack they would launch more than five missiles. The error in the system was discovered to be a bug in part of the software that distinguished false missiles from satellites picking up the reflection of sunlight from the top of clouds.\cite{ZDNetDisasters} If the bug in the code has falsey detected more missiles the world could be a very differn't place today.
 \vspace{5mm}
-\par  Software disasters are caused by three main reasons. Poor software project management, poor risk assessment and poor development and testing practices.\cite{mcquaid2012software} Software testing is therefore extremely prevelent and has upmost importance as it can prevent World War and save companies a lot of money.
+\par Software testing increases the relability of a system and quality, by detecting errors and bugs which can then be fixed, quality can aslo be improved by tests proving it meets its design requirements. Software testing however is very costly, accounting for half the time put into development of a system and half of total expenditure.\cite{myers2011art} Automating part or the whole of the software testing process reduces the costs of testing while maintaining its benefits.
+\vspace{5mm}
+\par My motivation for this project is to bring the benefits of automated testing to Ruby on Rails. Ruby on Rails is a web application framework that allows developers to create fully functioning applications in a short of space of time. The reduction in time spent implementing increases the proportion of time spent testing. Thefore Ruby on Rails would benefit greatly from automated testing and also further encompass its time saving aspect.
+\par I will create a system that Ruby on Rails developers can use to reduce the development time of their projects by automatically generating all or part of the tests they require. The tests generated should not reduce the reliability and quality that manual written tests create.
 
-\subsection{Benefits of Testing and Automation}
 
-\par Inadequate software testing infastructure was estimated to cost the US economy \$59.5 billion a year.\cite{NISTReport} It was also estimated that the potentail cost reduction from feasbile infastructure would be \$22.2 billion a year. \cite{NISTReport} Due to software disasters and the vast amount of money that can be saved and also avoid incurring additonal costs, people have become more aware of the importance of testing. The benefits of the reduced costs  comes from ihe increased reliabilty and quality of the product produced when software testing is implemented.
 
-\par "In a typical programming project approximately 50 percent of the elapsed time and more than 50 percent of the total cost were expended in testing the program or system being developed"\cite{myers2011art}. Software testing saves you alot of money but also costs alot of money. By automating part or the whole process the costs can be reduced while still obtaining all of the benefits.
-
-\subsection{Ruby on Rails}
-\par Ruby on Rails as a framework 
-\par model as mvc
-\par Rspec to test m
-
-\subsection{Project Aims}
-\par The overall aim of this project is to reduce the cost of developing Ruby on Rails applications. The reduction in costs comes from the time saved by automatically generating test cases for the model component of the application. The develop will input a formal specification of thier database into a system from which they can download seperate files containing a test suite for each table they have defined. The files are seperated in keeping with standard Ruby on Rails practices. Once the file is downloaded it can be inserted into the application and be available to run immediatley. This project should reduce the errors and bugs in Ruby on Rails applications via the feedback from the tests generated, improving the reliablity and quality of Ruby on Rails projects via the model component.
 
 
 
@@ -199,6 +187,24 @@ Filler text, filler text, filler text, filler text, filler text, filler text, fi
 \section{Chapter 6: Results and Discussion}
 Filler text, filler text, filler text, filler text, filler text, filler text, filler text, filler text.
 \section{Chapter 7: Conclusions}
+
+\par Software disasters can be caused by poor testing practices,\cite{mcquaid2012software} if the correct testing procedures practices were in place the situation would never of occured. Software testing is therefore extremely important and included in the development of all applications. However software testing "In a typical programming project approximately 50 percent of the elapsed time and more than 50 percent of the total cost were expended in testing the program or system being developed"\cite{myers2011art}, making it a huge cost of development. By automating part or the whole of the process the costs can be reduced while still obtaining all of the benefits.
+
+\subsection{Benefits of Testing and Automation}
+
+\par Inadequate software testing infastructure was estimated to cost the US economy \$59.5 billion a year.\cite{NISTReport} It was also estimated that the potentail cost reduction from feasbile infastructure would be \$22.2 billion a year. \cite{NISTReport} Due to software disasters and the vast amount of money that can be saved and also avoid incurring additonal costs, people have become more aware of the importance of testing. The benefits of the reduced costs  comes from ihe increased reliabilty and quality of the product produced when software testing is implemented.
+
+\par "In a typical programming project approximately 50 percent of the elapsed time and more than 50 percent of the total cost were expended in testing the program or system being developed"\cite{myers2011art}. Software testing saves you alot of money but also costs alot of money. By automating part or the whole process the costs can be reduced while still obtaining all of the benefits.
+
+
+
+\subsection{Ruby on Rails}
+\par Ruby on Rails as a framework 
+\par model as mvc
+\par Rspec to test m
+
+\subsection{Project Aims}
+\par The overall aim of this project is to reduce the cost of developing Ruby on Rails applications. The reduction in costs comes from the time saved by automatically generating test cases for the model component of the application. The develop will input a formal specification of thier database into a system from which they can download seperate files containing a test suite for each table they have defined. The files are seperated in keeping with standard Ruby on Rails practices. Once the file is downloaded it can be inserted into the application and be available to run immediatley. This project should reduce the errors and bugs in Ruby on Rails applications via the feedback from the tests generated, improving the reliablity and quality of Ruby on Rails projects via the model component.
 Filler text, filler text, filler text, filler text, filler text, filler text, filler text, filler text.
 Hello World!
 \subsection{subsection}
