@@ -478,12 +478,45 @@ end
 
 \section{Chapter 5: Implemention and Testing}
 
-\par FOR DESIGN ASPECT .EACH DO |D|
-\par EXPLAIN HOW IMPLEMENTED
-\par ANY CHALLENGES \ VARIATION
 
-\par TESTING
-\par FOR EACH REQUIREMENT IN CHP 3 SAY IF MET OR NOT, HOW IT WAS TESTED
+\subsection{Setup}
+\par Ruby version 2.1.7 and rails 4.2.5.2 were used to construct this project.
+\par Github\cite{github} was used throughout the project to provide version control and to prevent any catastrophes. The airbnb ruby style convention was used to provide clean looking and consistent code\cite{Airbnb}. Rails new was used to instatiate the system. Then the generate scaffolfd command was used to construct the base for each table in the database schema outlined in chapter 4.1 \ref{fig:scaffold}. This sets up the default mvc components for each, the exact files created can be seen in Figure \ref{fig:scaffold}.
+
+\begin{figure}
+\includegraphics[width=\linewidth]{screenshots/scaffold_example}
+\caption{Rails g scaffold command for field}
+\label{fig:scaffold}
+\end{figure}
+
+\subsection{Database}
+
+\begin{figure}
+\includegraphics[width=\linewidth]{screenshots/relations}
+\caption{Rails native relation methods used in field.rb model}
+\label{fig:relations}
+\end{figure}
+
+\begin{figure}
+\includegraphics[width=\linewidth]{screenshots/validations}
+\caption{Rails native validation method used in field.rb models}
+\label{fig:validations}
+\end{figure}
+
+\subsection{View and Flow}
+
+
+\subsection{Test Case Generation}
+
+
+\subsubsection{Value Generation}
+
+
+\subsubsection{RSpec Test Case}
+
+
+\subsubsection{RSpec Test Suite}
+
 
 
 \section{Chapter 6: Results and Discussion}
