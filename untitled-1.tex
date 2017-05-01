@@ -5,6 +5,10 @@
 \usepackage[parfill]{parskip}
 \usepackage{graphicx}
 \usepackage{booktabs}
+\usepackage{listings}
+\lstset{
+    escapeinside={(*}{*)}
+}
 \usepackage{multirow}
 
 \title{AutoRSpec}
@@ -187,7 +191,7 @@ First and foremost I would like to thank my supervisor \textbf{Dr. Gordon Fraser
 \par TIME SAVED
 
 
-
+\newpage
 \section{Chapter 3: Requirements and Analysis}
 \par REFINE AIM INLINE WITH LIT REVIEW TO "TO PROVIDE A SYSTEM THAT AUTOMATICALLY GENERATES MODEL TESTS IN RSPEC"
 \par This project started with the motivation of bringing automated testing to Ruby on Rails. From research carried out and disscussed in Chapter 2 and considering the scale of the project the way to achieve this was to focus on validation in the model component and produce RSpec test cases. A more precise description of the project is therefore \textbf{To create a system that automatically generate RSpec test cases for model validation in Ruby on Rails Applications}. To accomplish this aim three main aspects of the system are as follows:
@@ -244,7 +248,7 @@ First and foremost I would like to thank my supervisor \textbf{Dr. Gordon Fraser
 \end{enumerate}
 
 
-\begin{table}[h!]
+\begin{table}
 \centering
 \caption{Formal Specification Requirements}
 \label{my-label}
@@ -270,7 +274,7 @@ First and foremost I would like to thank my supervisor \textbf{Dr. Gordon Fraser
 \end{tabular}
 \end{table}
 
-\begin{table}[h!]
+\begin{table}
 \centering
 \caption{RSpec Test Case Requirements}
 \label{my-label}
@@ -292,7 +296,7 @@ First and foremost I would like to thank my supervisor \textbf{Dr. Gordon Fraser
 \end{tabular}
 \end{table}
 
-\begin{table}[h!]
+\begin{table}
 \centering
 \caption{RSpec Test Suite Requirements}
 \label{my-label}
@@ -309,40 +313,168 @@ First and foremost I would like to thank my supervisor \textbf{Dr. Gordon Fraser
 
 
 \newpage
-\newpage
 \section{Chapter 4: Design}
 
-\par STRUCTURE INFORMATION REQUIRED INTO DB DIAGRAM
+\subsection{Database}
+\par The database was designed to accomodate the formal specification and extra information needed for RSpec test cases. Ruby on Rails has native support for relations via ActiveRecord, this provided flexability in being able to have many relations. The design paradigm of sole responsiblity was carried forward and each table has one purpose.
 
-\par FIG: DATABASE DIAGRAM
+\begin{figure}
+\includegraphics[width=\linewidth]{screenshots/databaseUML}
+\caption{UML Database diagram}
+\label{fig:UML1}
+\end{figure}
 
-\par MOCKUP OF HOW INFO SHOULD BE ENTERED/ EDITED
+\par \textbf{Project}
+\par Project allows for a user to use the system for multiple projects, that is to organise groups of tables that are disconnected. The name field is unique to avoid confusion amongst projects. The description field is only for the user to add extra information if they desire and serves no functional purpose in the system. A project can have zero to many tables. When a project  is deleted its associated tables should also be deleted.
 
-\par FIG OF MOCKUP
+\par \textbf{Table}
+\par Table is the table in a users database they are constructing a functional specification for. A table can only be created with a valid project\_id foreign key. The name is unique within the scope of the project, multiple tables can exist with the same name within the database but they must belong to seperate projects. The description field is only for the user to add extra information if they desire and serves no functional purpose in the system. A table belongs to a project and has zero to many fields. When a table is deleted its associated fields should also be deleted.
 
-\par HOW TESTS SHOULD BE GENERATED
+\par \textbf{Field}
+\par Field is the field in a users database they are constructing a functional specification for. A field can only be created with a valid table\_id foreign key. The name is unique within the scope of the table, multiple fields can exist with the same name within the database but they must belong to seperate tables. The description field is only for the user to add extra information if they desire and serves no functional purpose in the system. Data\_type\_id is the fields data\_type and is limited to values in the Data Type table, however no relation is forced. A field belongs to a table and has zero to many Validations through Validation Assignments. When a table is deleted its associated validation assignments should also be deleted.
 
-\par FIG OF THAT BUTTON
+\par \textbf{Validation}
+\par Validation is a validation the user can associate to a field. The user can not create, edit or destroy these and they are seeded in the database. The name is unique within the scope of its field\_data\_type. The description field is to aid the user is understanding what the validation is. The rule field is used within the system to generate values. Field\_data\_type\_id and value\_data\_type\_id limited to values in the Data Type table, however no relation is forced, and are used so only appropriate validations can be assigned to fields. A validation has zero to many fields through validation assignments.
 
-\par HOW INFORMATION SHOULD BE PRESENTED
+\par \textbf{Value}
+\par Value is the value of a validation that a user associates with a field, E.g false for blank or ten for minimum length. A value can only be creataed with a valid validation\_assignment\_id foreign key. The value is stored as a string and the data type of which the system should treat the value as is stored in data\_type\_id, which refers to the data type table, but no relation is enforced. A value belongs to a validation assignment.
 
-\par RSPEC TEMPLATE DESIGN 
+\par \textbf{Validation Assignment}
+\par Validation assignment associates a field with a validation and also the value for that validation. The assignment is created then a value is created belonging to the assignment. A validation assignment can only be created with both valid field\_id and validation\_id foreign keys. A validation assignment has one field, one validaiton and owns a value.
 
-\par FIG: FLOW CHART OF PATH FOR GEN A TEST CASE
+\par \textbf{Data Type}
+\par Data type is used to provide consistency throoughout the system by checking data types are equal between entities, checking values of are the correct type and also used in forms to reduce options available to the user. The user can not create, edit or destroy these and they are seeded in the database. The name field is unique to avoid confusion amongst data types and avoid possible duplication. The description field is to clarify the user on the data type. Data  type has no relations, but is used throughout the system in reference.
 
-\par EXPLAIN FLOW CHART
 
-\par STRING GENERATION FLOW CHART
+\subsection{View and Flow}
+\par Human centered design principles with the goal of increasing effectiveness, efficency and satisfaction\cite{maguire2001methods} were the main consideratons when designing the look and how the user navigates and uses the system.The principles taken into consideration and how they were applied are\cite{abras2004user}:
 
-\par EXPLAIN FLOW CHART
+\begin{enumerate}
+\item \textbf{Simplifying the structure of tasks}
+\par An average user is able to remember five things at a time. Providing consistency within similar methods such as creations of entitys and also clearly displaying where in the system the user is reduces the strain on both long and short term memory. The creation, deletion and editing of entitys follows the familiar and consistent method of filling in a form and submitting it. At the top of each page it clearly displays how deep in the system and also the names of each level. This means the user will have to remember less when using the system.
+\item \textbf{Exploiting the power of constraints}
+\par Reducing and not exposing a user to redundant or irrelevant information allows a user to use a system more efficently and with less effort, by not having to process said information. This is used by displaying only the related entities when viewing an entity, only the fields for a table are shown when viewing that table. When a user is creating an entity with a form options are reduced to those that are valid, only choose from Integer validations for a Integer field. Entitys that are dependent on a another, field is dependent on table, are only available to create when viewing the dependent upon entity.
+\item \textbf{Make things visible}
+\par Bridging the gulf of execution, buttons and links do what a user expects them to do.  This principle followed by using standard naming conventions on standard objects such as buttons and links that a user is familiar with.
+\end{enumerate}
 
-\par NUMBER GENERATION FLOW CHART
+\begin{figure}
+\includegraphics[width=\linewidth]{screenshots/pageflow}
+\caption{The navigational flow of the system}
+\label{fig:nflow}
+\end{figure}
 
-\par EXPLAIN FLOW CHART
 
-\par OVERALL FLOW CHART
+\begin{figure}
+\includegraphics[width=\linewidth]{screenshots/muhome}
+\caption{Mock up of projects page for the system, also home page. }
+\label{fig:mu1}
+\end{figure}
 
-\par EXPLAIN FLOW CHART
+\begin{figure}
+\includegraphics[width=\linewidth]{screenshots/mutable}
+\caption{Mock up for a table in the system displaying its fields}
+\label{fig:mu2}
+\end{figure}
+
+\begin{figure}
+\includegraphics[width=\linewidth]{screenshots/mutablefields}
+\caption{Mock up for a field in the system displaying its validation}
+\label{fig:mu3}
+\end{figure}
+
+\begin{figure}
+\includegraphics[width=\linewidth]{screenshots/muform}
+\caption{Mock up for a form in the system}
+\label{fig:mu4}
+\end{figure}
+
+\par \textbf{General}
+\par Consistiency was at the the forefront of the visual and flow design. Each page that has a dependent entity can only be created via a button on the page of that entity\ref{fig:mu2}. When viewing an entity it will display all and only its dependent entities in a table.\ref{fig:mu2} The dependent entites can be viewed, edited and deleted from this table via links in the row of that entity on the table\ref{fig:mu3}. Each page that is dependent upon on entity can access the dependent enity via the back button\ref{fig:mu3}, also applies naviagtionally to forms\ref{fig:mu4}. The header at the top of each page displays the depth the user is at by underlying the current level while also indicating the levels with the name of the entity at that level\ref{fig:mu3}.
+
+\par \textbf{Nav bar}
+\par The nav bar is not a page but the navigational bar displayed at the top of each page\ref{fig:mu1}. It links to the projects page, validations page and the data types page via the appropiatley name button.
+
+\par FUNCTIONALITY OF PAGES ???
+
+
+\subsection{Test Case Generation}
+\subsubsection{Value Generation}
+\begin{lstlisting}[frame=single,numbers=left,caption= {Pseudo code for value generation} label={psuedo:value}]
+generate_value( (*\textbf{isolatedValidation}*), (*\textbf{validations}*))
+ for (*\textbf{iterationCount}*) in (*\textbf{1}*) to (*\textbf{X}*)
+  (*\textbf{randomValues}*) = generate_random_values (*\textbf{Y}*)
+  if (*\textbf{isolatedValidation} not \textbf{nil}*)
+   (*\textbf{randomValues}*) = fail_validation((*\textbf{isolatedValidation}*), (*\textbf{randomValues}*))
+   if (*\textbf{randomValues}*) is empty
+    next
+  for (*\textbf{validation}*) in (*\textbf{validations}*)
+   randomValues = pass_validation((*\textbf{validation}*), (*\textbf{randomValues}*))
+   if (*\textbf{randomValues}*) is (*\textbf{empty}*)
+    (*\textbf{next}*)
+  if (*\textbf{randomValues}*) is (*\textbf{empty}*)
+   (*\textbf{ next}*)
+  else
+   (*\textbf{return}*) random value from (*\textbf{randomValues}*)
+ return (*\textbf{ERROR NO VALUE GENERATED}*)
+\end{lstlisting}
+
+\par The psuedo code in Listing 1 shows then general approach to generating a value for a test case. To increase the efficency and speed of potentailly returning a valid value by generating \textbf{X} values at a time for a potentail of \textbf{Y} times. Generating \textbf{X}*\textbf{Y} values initailly will take a greater deal of time and may be overkill. The correct balance will need to be found in implementation of the initail amount of values for each iteration and how many iterations to carry out.
+\par The function will take two parameters, a validation to fail and a list of validations to pass. The validation to fail can be nil, in which case it will produce a value that passes all validations in validations parameter. The validations parameter can also be an empty list in which case it will return a value that fails the isolated validation. In the case of nil validation and and empty list of validations or no value can be generated it will return an error.
+\par The flow of the function is to generate a random amount of values, then remove those values that pass the isolated validation, afterwards it will remove those that fail each validation in validations. After each time this array of random values is manipulated it will check if its empty, if so it will skip to the next iteration, this improves speed and efficency by eliminating unnesscary operations. When all validations have been processed it will return a random value from random values. The general flow and principles is the same for each data type that values will be generated.
+
+
+\subsubsection{RSpec Test Case}
+\begin{lstlisting}[frame=single,numbers=left,caption= {Pseudo code for value generation} label={psuedo:case}]
+it "is (invalid with a value that is not (*\textbf{VALIDATION}*) (*\textbf{VALVALUE}*)" do
+  (*\textbf{TABLENAME}*) = build(:(*\textbf{TABLENAME}*), (*\textbf{FIELDNAME}*): (*\textbf{GENVALUE}*)
+  if (*\textbf{TABLENAME}*).respond_to?(:valid?)
+   expect((*\textbf{TABLENAME}*).not_to be_valid, lambda (*\textbf{TABLENAME}*).errors.full_messages.join("\\n")
+ end
+end
+\end{lstlisting}
+
+\par \textbf{VALIDATION} is the validation that is being tested on the field, and is described as its polar opposite
+\par \textbf{VALVALUE} is the value of the validation that is being tested on the field.
+\par \textbf{TABLENAME} is the name of the table the field belongs to
+\par \textbf{FIELDNAME} is the name of the field under test
+\par \textbf{GENVALUE} is the value that will test the validation
+\par The RSpec test case template that will be populated with information from the functional specification and value generated. An example of a employees age field with validation of greater than value eight with a generated value of thirteen.
+
+\begin{lstlisting}[frame=single,numbers=left,caption= {Pseudo code for value generation output} label={psuedo:caseex}]
+it "is invalid with a value that is not greater than 8" do
+  employee = build(:employee, age: (*\textbf{13}*))
+  if employee.respond_to?(:valid?)
+   expect(employee.to_not be_valid, lambda employee.errors.full_messages.join("\\n")
+ end
+end
+\end{lstlisting}
+
+\subsubsection{RSpec Test Suite}
+
+\par The test suite is responsible for the overall document structure that the user downloads. It will provide the preamble, then iterate through each field and finally end the document. It will provide all necessary logic to navigate test cases correctly and add the correct syntaxical links to the file. 
+
+\begin{lstlisting}[frame=single,numbers=left,caption= {Pseudo code for value generation} label={psuedo:suite}]
+require "spec_helper"
+
+desrcibe "(*\textbf{TABLENAMECAP}*)" do
+ it "has a valid factory" do
+  expect(build(:(*\textbf{TABLENAME}*))).to be_valid
+ end
+ #for each field belonging to table |(*\textbf{f}*)|
+  describe "(*\textbf{f.NAME}*) has property" do
+  # genval = generate_value((*\textbf{nil}*), (*\textbf{f.validations}*))
+  # add to file test_case_pass_all((*\textbf{f}*),(*\textbf{genval}*))
+  #for each validation belonging to (*\textbf{f}*) |(*\textbf{v}*)|
+   # genval = generate_value((*\textbf{v}*), (*\textbf{rest of validations}*))
+   # add to file test_case((*\textbf{v}*),(*\textbf{f}*),(*\textbf{genval}*))
+  #end
+  end
+ #end
+end
+\end{lstlisting}
+\par EXAMPLE ??
+\par To make the pseudo code more clear lines starting with \# are not printed to the document but code that is ran. TABLENAMECAP is the table name capitalised. Lines 1-4 are the preamble and set up the RSpec document and write a test to check the tables factory is valid. Then for each field it will add the correct syntax to the file for that field and follow it by adding a test case to the file that passes all validations. For each validation that field has been assigned it will iterate through isloting each field and adding the relevant test case to the file. Test suite is the top level function therefor before it calls to generate a test case, lines 8,11, it will call the function to generate a valid value for that test case, lines 7, 10. Test suite will finally end the document with the appropiate "end"  syntax that it opened in the preamble.
 
 \section{Chapter 5: Implemention and Testing}
 
