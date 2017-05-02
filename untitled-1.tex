@@ -1,13 +1,14 @@
 \documentclass[a4paper,12pt]{article}
 
 
-
+\usepackage{lscape}
 \usepackage[parfill]{parskip}
 \usepackage{graphicx}
 \usepackage{booktabs}
 \usepackage{listings}
 \lstset{
-    escapeinside={(*}{*)}
+    escapeinside={(*}{*)},
+    breaklines =true
 }
 \usepackage{multirow}
 
@@ -545,20 +546,282 @@ end
 \par The design for generating a value was modified slightly due to finer details but its overall flow and princple was kept. One oversight from the design was the exclusion validation, when an exculsion validation is to be isolated it is logical to just return a random value from the list of values excluded as they will all fail the validation rather than try to randomly generate a value in the list.
 
 \par \textbf{String Generation}
-\par gen\_rand\_string\_array is the function responsible for generating random strings, it uses the 'regexp-examples'\cite{regexprangem} gem. The regexp-examples gem adds the functionality of generating a string from a regular expression that matches that expression. The max\_repeater\_variance variable is set to fifty\ref{genranstr}, this sets the amount of characters that can be generated from each subsection to the range zero to fifty, giving a good range and differnce in strings generated. Empty strings can be generated so the while loop ensures the amount of strings called in the parameters are generated and returned, empty strings are tested elsewhere as blank validation\ref{genranstr}.
 
-\begin{figure}
-\includegraphics[width=\linewidth]{screenshots/genranstr}
-\caption{gen\_rand\_string\_array}
-\label{fig:genranstr}
-\end{figure}
-\par Another gem 'to\_regexp' gem\cite{regexpstrgem} is used to 
+\par The generate\_string\_value function\ref{code:genstrval} is the top level function responsible for generating a string value for a test caseTo explain the function in depth the functions it uses will be explained first.
+
+\begin{lstlisting}[frame=single,numbers=left,language = ruby,caption= {gen\_rand\_string\_array}, label={code:genranstr}]
+def gen_rand_string_array(regex, amount)
+  array = []
+  # Generate amount specified as generated empty strings are deleted
+  while array.length < amount
+    string = regex.random_example(max_repeater_variance: 50)
+    if string != ""
+      array << string
+    end
+  end
+  return array
+end
+\end{lstlisting}
+
+\par \textbf{gen\_rand\_string\_array}\ref{code:genranstr}
+\par gen\_rand\_string\_array takes two parameters regex and amount and returns an array of strings. regex is the regex from which the strings will be generated from and amount is the amount of strings to return in the array. The actual string value is generated using the 'regexp-examples'\cite{regexprangem} gem. The gem extends the regexp functionality by adding the function of generating a random string that is valid for that regular expression. The max\_repeater\_variable is set to 50, setting the amount of characters that can be included in the generated string output from each subsection of the regular expression pattern to be in the range of zero to fifty. The generated string can be an empty string so the generation is wrapped in a while loop to ensure the amount of strings returned is that of those requested in the parameters.
+
+\begin{lstlisting}[frame=single,numbers=left,language = ruby,caption= {pass\_string\_rule}, label={code:passstrrule}]
+def pass_string_rule( strings, rule, value )
+  if rule == "regex"
+    regex = value.to_regexp
+    return strings.keep_if{ |n| n =~ regex } # =~ , ""[regex] , "".match(regex) #ATTN TIMINGS
+  elsif rule == "exclusion"
+    excluded = value.split(",").map(&:strip)
+    return strings.delete_if{ |n| excluded.include?(n)}
+  else # ASSUMED: Only length validations can progress to here
+    # Comparorator stored as string in database e.g ">"
+    return strings.keep_if{ |n| n.length.method(rule).(value.to_i)}
+  end
+end
+\end{lstlisting}
+
+\begin{lstlisting}[frame=single,numbers=left,language = ruby,caption= {fail\_string\_rule}, label={code:failstrrule}]
+def fail_string_rule(strings, rule, value )
+  if rule == "regex"
+    regex = value.to_regexp
+    return strings.delete_if{ |n| n =~ regex }
+  else # ASSUMED: Only length validations can progress to here
+    # Comparorator stored as string in database e.g ">"
+    return strings.delete_if{ |n| n.length.method(rule).(value.to_i)}
+  end
+end
+\end{lstlisting}
+
+
+\par \textbf{pass\_string\_rule and fail\_string\_rule}
+\par pass\_string\_rule takes three paramaters strings, rule and value and returns an array of strings. rule is the validation with value being the value of the validation, E.g rule = minimum length and value = 4, strings is the array of strings that have to pass the validation to be returned. The function starts by chechking if the rule is format validation, known internally as regex, if so it will remove any string form strings array parameter that does not meet the regular expression specified in the value parameter and return the array. Values are stored on the system database as strings so the 'to\_regexp' gem\cite{regexpstrgem} is used to convert the string into a regexp object.
+\par Next it checks if the rule is exclusion, if so it will process the value parameter as seen on line 6 into an array of strings due to how its stored one string on the database. Then it will return the array of strings passed as the parameter with any string that is in the exclusion array removed. After these two checks the only validations that can remain for strings are length validations. Inclusion and blank are handled in another function and rule cannot be the exclusion or format validation. rule for length validations is a comparorator ( \textgreater=,\textgreater,==,\textless,\textless=) stored as a string in the database. This allows the functionallity of, return strings array parameter with strings kept if the the length of the string is 'rule' value. E.g keep if \textgreater 3.
+\par fail\_string\_rule follows the same format as pass\_string\_rule with keep and delete string from string parameter array switched. fail\_rule\_string however does not have to check for exclusion as this is handled in generate\_string\_value.
+
+
+\begin{lstlisting}[frame=single,numbers=left,language = ruby,caption= {prep\_string}, label={code:prepstr}]
+def prep_string(string)
+  # Add speech marks and escape \ " within to be written safely to test file
+  return "\"" + string.gsub(/[\"\\]/){ |c| "\\"+c } + "\""
+end
+\end{lstlisting}
+
+\par \textbf{prep\_string}
+\par prep\_string takes a string and returns in with speech marks concated on each side and the '\textbackslash' and ' " ' characters escaped. It is used so when the string value is printed to file it is in the correct format and doesn't have any undesired effects that would occur if the characters were not escpaed.
+
+\begin{lstlisting}[frame=single,numbers=left,language = ruby,caption= {generate\_string\_value}, label={code:genstrval}]
+def generate_string_value(isolated, rest)
+  # isolated can be passed as nil to generate a pass all
+  # default regexp to generate strings
+  regexp = [/\A[a-zA-Z]*[a-zA-Z]*\z/, /\A[\w]*[\w]*\z/, /\A[\w]*[[:punct:]]*[\w]*\z/, 
+    /\A[\w]*[[:print:]]*[a-zA-Z]*\z/]
+  # Add users regexp to the defaults if in rest
+  if !rest.empty?
+      if validations_contain?("format", rest)
+        index = validations_index_of("format", rest)
+        regexp << rest[index][1].to_regexp
+      end
+  end
+  # Begin generation loop
+  for full_iteration in 1..50
+    strings = []
+    # If testing exclusion then return one of its values 
+    if (isolated != nil) && (isolated[0] == "exclusion")
+      return prep_string(isolated[1].split(",").map(&:strip).sample) 
+    else
+      regexp.each do |r|
+        strings += gen_rand_string_array(r, (1000/regexp.length))
+      end
+    end
+    if isolated != nil
+      strings = fail_string_rule(strings, isolated[0], isolated[1])
+      if strings.empty?
+        next
+      end
+    end
+    rest.each do |rule|
+      strings = pass_string_rule(strings, rule[0], rule[1])
+      if strings.empty?
+        break
+      end
+    end
+    if strings.empty?
+      next
+    else
+      return prep_string(strings.sample)
+    end     
+  end
+  # No valid value generated
+  return "\"!!!ERROR GENERATING VALUE\""
+end
+\end{lstlisting}
+
+\par \textbf{generate\_string\_value}
+\par The generate\_string\_value function\ref{code:genstrval} is the top level function responsible for generating a string value for a test case. It takes two parameters isolated and rest. isolated is the validation that has been isolated and is under test in the test case. rest are the other validations that are associated to the field under test. When both parameters are present it will return a string value that violates the isolated validation and obeys those in rest, rest can be an empty list. If isolated is nil it will return a string value that obeys all validation in rest. If a string value isnt generated it will return the string on line 43. 
+\par At the begining of the function some regular expressions are defined in array, the regular expression decribe a diverse and varied range of patterns for strings. The function then checks to see if the validations to pass contain the format validation, if so it will concatenate the regular expression to those array defined previously. This is to include strings from the users format in the generation pool. After this check the iteration begins as described in the design chapter, the maximum iterations is fifty.
+\par At the begining of the iteration an empty array is definfed call strings, this variable will contain the randomly generated strings to be processed. The first step of the iteration is to check if the isolated validation is 'exclusion', if so it will return a random tring from the array of excluded values stored in the database from the formal specifcation as they are the only strings that will fail the exclusion validation. This step could preceed the for loop but was included as it provides clarity having all validation handling within the iteraions, also it will only ever be ran once so no efficeny is lost. If exclusion is not the isolated validation then it will populate the strings array with randomly generated strings from the regular expressions 'regexp' defined above, generating 1000 strings in total with the same amount from each regular expression, giving wide range of diverse strings.
+\par Once the strings have been generated the function checks if isolated is not nil, if so it will remove strings from the strings array that pass the isolated validation via fail\_string\_rule. Next it will iterate through each validation in rest and remove each string from strings array that fail the validation via pass\_string\_rule. Once all validations have been iterated through it will return a random value from strings array after preparing via prep\_string. Throughout the function after the strings array has been modified, strings potentailly removed, it will check if strings is empty and if so will 'next' to the next iteration. This is because strings is empty so no valid string remains so to increase efficency and save time it is logical to go to the next iteration.
+
+\par \textbf{Number Generation}
+\par Generating values for the float and integer datatypes follows the exact same methodolgy and structure as string. Therefore the slight differnce will be highlighted and infered as changes to generate\_string\_value. Numbers are randomly generated using rubys Random.rand with a range of negative one million to positive one million. The pass and fail rule functions dont have to account for the format validation but do have to account for divisible, which is accomplished by a map across the array of numbers. Also instead of comparing the length of a string with the comparorator the actual number is compared\ref{code:numsnip}. The last differnce is that the number returned does not need to be prepared like the string values.
+
+\begin{lstlisting}[frame=single,numbers=left,language = ruby,caption= {Differnce in pass/fail num rule to string pass/fail}, label={code:numsnip}]
+if rule == "divisible"
+  return numbers.keep_if{ |n| n % value == 0}
+else # ASSUMED: Only >,>=,<,<= validations can progress to here
+  # Comparorator stored as string in database e.g ">"
+  return numbers.keep_if{ |n| n.method(rule).(value) }
+end
+\end{lstlisting}
 \subsubsection{RSpec Test Case}
 
+\par  In the design the behavioural description line of the RSpec test case, it "has this behaviour" do, was orginally in the test case template. However this was removed and is now handled by the test suite section, the change was to provide a more consistent test cases overall and make give the code greater clarity. Origanlly alot of variables were passed in through the hash and it made the template more complex and reduced its clarity, where as handling in test suite this problem was averted.
 
+\par \textbf{test\_text}\ref{code:testtext}
+\par test\_text is the template for all test cases apart from the specail case of blank test which is explained after this section. test\_text takes three parameters valid, hash and indent. valid is a boolean and is used to change the value of valid in the hash, this variable is a string that is repsonsible for the matcher "to" ot "to\_not" and is set according to the boolean, lines 3-7. hash is a hash that contains the necassary information to populate the template. The last parameter indent is the indentation the test case should start at. The function returns the string with the parts wrapped by \%\{ and \} replaced by the string value of the variable name in the hash. The hash is contructed in test suite and passed into test\_text as a parameter.
+\begin{landscape}
+\begin{lstlisting}[frame=single,numbers=left,language = ruby,caption= {test\_text}, label={code:testtext}]
+def test_text(beValid,hash, indent)
+  tab = "\t"
+  if beValid
+    hash[:valid] = "to"
+  else
+    hash[:valid] = "to_not"
+  end
+  template = tab*indent + "%{tableName} = build(:%{tableName}, %{fieldName}: %{generatedValue})\n" +
+                   tab*indent + "if %{tableName}.respond_to?(:valid?)\n" +
+                   tab*(indent+1) + "expect(%{tableName}).%{valid} be_valid, lambda {%{tableName}.errors.full_messages.join(\"\\n\")}\n" +
+                   tab*indent + "end\n" 
+  return template % hash
+end
+\end{lstlisting}
+\end{landscape}
+
+\par \textbf{blank\_test}\ref{code:blanktext}
+\par The can be blank vaildator has its own template because the variations between the desired output and test\_text template were to great to make it clear and functional. The function follows the exact same methods, except it has a differn't template and it also contains the behaviour. 
+\begin{landscape}
+\begin{lstlisting}[frame=single,numbers=left,language = ruby,caption= {blank\_test}, label={code:blanktext}]
+def blank_test(hash, bool, indent)
+  tab = "\t" 
+  template = tab*indent + "it \"%{decision} be blank\" do \n" +
+             tab*(indent+1) + "%{tableName} = build(:%{tableName}, %{fieldName}: nil)\n" +
+             tab*(indent+1) + "if %{tableName}.respond_to?(:valid?)\n" +
+             tab*(indent+2) + "expect(%{tableName}).%{equator} be_valid, lambda {%{tableName}.errors.full_messages.join(\"\\n\")}\n" +
+             tab*(indent+1) + "end\n" +
+             tab*indent + "end\n\n"
+  if bool
+    hash[:decision] = "can"
+    hash[:equator] = "to"
+  else
+    hash[:decision] = "can not"
+    hash[:equator] = "to_not"
+  end    
+  return template % hash
+end
+\end{lstlisting}
+\end{landscape}
 \subsubsection{RSpec Test Suite}
 
 
+\begin{lstlisting}[frame=single,numbers=left,language = ruby,caption= {generate\_tests\_for\_table}, label={code:bigboy}]
+def generate_tests_for_table(id)
+
+    table = Table.find(id)
+    fileName = table.name.downcase + "_spec.rb"
+    #file = File.open(fileName, "w")
+    file = Tempfile.new(fileName,'tmp')
+    # Introduction/Set-up file
+    file.puts "require \"spec_helper\""
+    file.puts ""
+    file.puts "desrcibe \"" + table.name.titleize + "\" do"
+    file.puts ""
+    file << write_factory_test(table.name, 1)
+
+    #Context loop for each field
+    # Hash stores variables to populate test templates
+    hash = { tableName: table.name.downcase}
+    table.fields.each do |f|
+      hash[:fieldName] = f.name
+      if f.validation_assignments.empty?
+        next 
+      else
+        file.puts "\tdescribe \"" + f.name + " field has validation\" do"
+        file.puts ""
+        validations = package_validations(f.validation_assignments)
+        if validations_contain?("blank", validations)
+          index = validations_index_of("blank", validations)
+          if validations[index][1] == "true"
+            file << blank_test(hash, true, 2)
+          else
+            file << blank_test(hash, false, 2)
+          end
+          # Remove blank from validations, fully handled
+          validations.delete_at(index)
+          hash.delete(:decision)
+          hash.delete(:equator)
+        end
+        if validations_contain?("inclusion", validations)
+          index = validations_index_of("inclusion", validations)
+          if DataType.find(f.data_type_id).name == "String"
+            stringArray = validations[index][1].split(",").map(&:strip)
+            file << string_inclusion(hash, stringArray)
+          else
+            numberArray = database_string_to_number_array(validations[index][1])
+            file << number_inclusion(hash, numberArray)
+          end
+          next # Inclusion supercedes remaining validations, skip to next
+        end
+        # test with all validations valid
+        file.puts "\t\tit \"is valid with a generated value\" do\n"
+        if DataType.find(f.data_type_id).name == "String"          
+          value = generate_string_value(nil, validations)
+          hash[:generatedValue] = value
+          file << test_text(true, hash, 3)
+        else
+          value = 0
+          if DataType.find(f.data_type_id).name == "Float"
+            value = generate_value_integer(nil, validations, "Float")
+          elsif DataType.find(f.data_type_id).name == "Integer"
+            value = generate_value_integer(nil, validations, "Integer")
+          end
+          hash[:generatedValue] = value
+          file << test_text(true, hash, 3)
+        end
+        # Write test isolating each validation to be invalid
+        validations.each do |p|
+          # Array we can manipulate
+          rest = [].replace(validations)
+          rest.delete_if{ |e| e == p} # remove isolated rule
+          file.puts "\t\tit \"is invalid with value " + p[0].to_s + " " + p[1].to_s + "\" do"
+          if DataType.find(f.data_type_id).name == "String"
+            value = generate_string_value(p, rest)
+            hash[:generatedValue] = value
+            file << test_text(false, hash, 3)
+          else
+            value = 0
+            if DataType.find(f.data_type_id).name == "Float"
+              value = generate_value_integer(nil, validations, "Float")
+            elsif DataType.find(f.data_type_id).name == "Integer"
+              value = generate_value_integer(nil, validations, "Integer")
+            end
+            hash[:generatedValue] = value
+            file << test_text(false, hash, 3)
+          end
+          file.puts "\t\tend"
+          file.puts ""
+        end
+      end
+      file.puts "\tend"
+      file.puts ""
+    end
+    file.puts "end"
+    file.close
+    return file.path, fileName
+  end
+\end{lstlisting}
+\par \textbf{generate\_tests\_for\_table}
+\par generate\_tests\_for\_table is the function that takes on the responsiblities of test suite outlined in the design section. It takes the id of the table for which to generate the test suite for as a parameter an returns the file path and file name. When a user clicks the download link for a table is will invoke the download function, this invokes generate\_tests\_for\_table which using its return values the download function downloads the file to the user via the file path with the file name as file name.
 
 \section{Chapter 6: Results and Discussion}
 
