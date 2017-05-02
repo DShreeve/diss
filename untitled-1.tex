@@ -266,10 +266,10 @@ First and foremost I would like to thank my supervisor \textbf{Dr. Gordon Fraser
 \textbf{7}  & A user can create a Field, only for a given Table                      & \textbf{M}        \\ \hline
 \textbf{8}  & A user can edit a Field                                                & \textbf{M}        \\ \hline
 \textbf{9}  & A user can delete a Field, associated validations are also deleted     & \textbf{M}        \\ \hline
-\textbf{10} & A user can assign a validation and value, only for a given Field       & \textbf{M}        \\ \hline
-\textbf{11} & A value must be valid for a validation to be assigned                  & \textbf{M}        \\ \hline
-\textbf{12} & A user can edit a validation assignment and value                      & \textbf{M}        \\ \hline
-\textbf{13} & A user can delete a validation assignment and value                    & \textbf{M}        \\ \hline
+\textbf{10} & A user can assign a validation, only for a given Field       & \textbf{M}        \\ \hline
+\textbf{11} & A user can only create a value for a assigned validation                  & \textbf{M}        \\ \hline
+\textbf{12} & A user can edit a  value                      & \textbf{M}        \\ \hline
+\textbf{13} & A user can view all Projects                 & \textbf{M}        \\ \hline
 \textbf{14} & A user can view all Tables associated to a given Project               & \textbf{D}        \\ \hline
 \textbf{15} & A user can view all Fields associated to a given Table                 & \textbf{D}        \\ \hline
 \textbf{16} & A user can view all validations and values associated to a given field & \textbf{D}        \\ \hline
@@ -793,7 +793,7 @@ def generate_tests_for_table(id)
           # Array we can manipulate
           rest = [].replace(validations)
           rest.delete_if{ |e| e == p} # remove isolated rule
-          file.puts "\t\tit \"is invalid with value " + p[0].to_s + " " + p[1].to_s + "\" do"
+          file.puts "\t\tit \"is invalid with value that is not " + p[0].to_s + " " + p[1].to_s + "\" do"
           if DataType.find(f.data_type_id).name == "String"
             value = generate_string_value(p, rest)
             hash[:generatedValue] = value
@@ -820,8 +820,156 @@ def generate_tests_for_table(id)
     return file.path, fileName
   end
 \end{lstlisting}
-\par \textbf{generate\_tests\_for\_table}
+\par \textbf{generate\_tests\_for\_table}\ref{code:bigboy}
 \par generate\_tests\_for\_table is the function that takes on the responsiblities of test suite outlined in the design section. It takes the id of the table for which to generate the test suite for as a parameter an returns the file path and file name. When a user clicks the download link for a table is will invoke the download function, this invokes generate\_tests\_for\_table which using its return values the download function downloads the file to the user via the file path with the file name as file name.
+\par The function begins by fetching the table from the database then creating the filename by taking the name of the table, downcasing it and concetaning '\_spec.rb' to it. Then a temporary file is created to write all of the information to, it creates a temporary file as it not needed locally for long as the user will download it once it has been generated. It then writes the necessary require and RSpec syntax to introduce the tables tests , lines 7-11. After this the factory test is wrote to the file, this is a simple test that makes sure the factory girl factory for the table the user has created is functioning correctly. The table name is then saved to a hash that will be used to store information for the test case tempaltes, this completes the preamble.
+\par After the preammle the tables fields are iterated through. At the begining of each iteration the fields name is saved to the hash, then if the field has no validations it will 'next' to the next iteration. If there are validations it will write the RSpec syntax to introduce the field, lines 22-23. Next it will package the validations into a more manageable format as oppose to that stored on the database. Once packaged it will check if the validations contain the blank validation, if so it will write the blank test to the file using blank\_test and remove the validation from the packaged validations. 
+\par The next check is for the inclusion validation and if it is present the data type appropiate function is called,explained after this section, to produce test cases which are added to the file then it 'next' to the next iteration. It skips the rest of the validations as inclusion supercedes all validations except blank, which is why blank precedes inlusion in order of checks in function. The next part in the function is to write a test case for where all validations are considered, this is to provide the information that the generation can create a valid value for all validations therfore making the isolated validations valid test cases, line 48-63. After it has been written to the file the next part is to iterate through each of the validaions. 
+\par At the start of each iteration rest, an array that contains all other validations is created. Then the behavioural descriptor is wrote to the fiel, E.g it "is invalid with a value not less than 5" do. Depending on the data type of the field the appropiate value generation is called and saved to the has before calling test\_text which is written to the file. After each validation has been iterated through the function writes the correct syntax to the file to finish it then closes the file, then returns the path and filename.
+
+\par \textbf{Inclusion}
+\par Inclusion is handled seperatley as it supercedes other validations and has to be treated in a slightly differn't way due to the only values being accepted are those in the inclusion list. The possibilty of randomly generating a value that is in this list is too small to compute effeicently. Before calling the function generate\_test\_for\_table will convert the value string in the database to an array of the relevant data type. Number and string inclusion are dealt with in the same manner so only string inclusion will be explained in this document. 
+\par string\_inclusion \ref{code:strinc} starts by storing in a variable a random value from the array of included values, this value will pass the validation. Then it will generate an array of random strings the same was as generate\_string\_value and remove any string from the array that is in inclusion, when a string is generated that is not included it is stored in a variable. Then it calls test\_text with the pssing variable and the valid boolean set to true to get a passing test case, after it calls it again the failing value and false, lines 18-21. After this it will concenate the test cases with there behavioural descriptors, lines 22-24, and return the string to generate\_test\_for\_table to be wrote to file.
+
+\begin{lstlisting}[frame=single,numbers=left,language = ruby,caption= {generate\_tests\_for\_table}, label={code:strinc}]
+def string_inclusion(hash, includedValues)
+  correctValue = prep_string(includedValues.sample)
+  incorrectValue = ""
+  regexp = [/\A[a-zA-Z]*[a-zA-Z]*\z/, /\A[\w]*[\w]*\z/, /\A[\w]*[[:punct:]]*[\w]*\z/, /\A[\w]*[[:print:]]*[a-zA-Z]*\z/]
+  strings = []
+  for i in 1..50
+    regexp.each do |r|
+      strings += gen_rand_string_array(r, (1000/regexp.length))
+    end
+    strings.delete_if{ |n| includedValues.include?(n) }
+    if strings.empty?
+      next
+    else
+      incorrectValue = prep_string(strings.sample)
+      break
+    end
+  end
+  hash[:generatedValue] = correctValue
+  correctTestText = test_text(true, hash, 3)
+  hash[:generatedValue] = incorrectValue
+  inCorrectTestText = test_text(false, hash, 3)
+  correct_intro = "\t\tit \"is valid with a value from inclusion\" do\n"
+  incorrect_intro = "\t\tit \"is invalid with a value not in inclusion\" do\n"
+  return correct_intro + correctTestText + incorrect_intro + inCorrectTestText 
+end
+\end{lstlisting}
+
+\subsection{Testing}
+
+\par The first stage of testing was to set up the factories for the models using factory girl\cite{fgirl}. Factories allow for rapid a reliable testing using the factory to build a valid entity in test cases. In fig \ref{code:fgirl} the factory for field is shown, the power of factory girl can be seen on line 5 where the table that field is dependent upon to be created can simple be defined by refering to the table factory. All model factories were constructed using the same method disaplyed in this example.
+
+\begin{lstlisting}[frame=single,numbers=left,language = ruby,caption= {Factory for field}, label={code:fgirl}]
+FactoryGirl.define do
+  factory :field do
+    name { "field_" + random_word_lc }
+    description "Dummy Information"
+    table
+    data_type_id 1
+  end
+end
+def random_word_lc
+  ('a'..'z').to_a.shuffle.join
+end
+\end{lstlisting}
+
+\begin{lstlisting}[frame=single,numbers=left,language = ruby,caption= {RSpec tests for table}, label={code:tabletests}]
+require "rails_helper"
+
+describe Table do
+
+  it "can be created" do
+    table = create( :table)
+    expect(Table.where(id: table.id).length).to eq(1)
+  end
+  
+  it "can not be created without a project" do
+    table = build( :table, project_id: 1)
+    expect(table).to_not be_valid
+  end
+
+  it "can be edited" do
+    table = create( :table, name:"Table")
+    table.name = "Change"
+    table.save
+    expect(Table.where(id: table.id).first.name).to eq("Change")
+  end
+
+  it "can be deleted" do
+    table = create( :table)
+    table.destroy
+    expect(Table.where(id: table.id).length).to eq(0)
+  end
+
+  it "deletes associated tables when deleted" do
+    table = create( :table)
+    field = create(:field, table_id: table.id)
+    table.destroy
+    expect(Field.where(id: field.id).length).to eq(0)
+  end
+
+end
+\end{lstlisting}
+\begin{lstlisting}[frame=single,numbers=left,language = ruby,caption= {RSpec tests for field}, label={code:fieldtests}]
+require "rails_helper"
+
+describe Field do
+
+  it "can be created" do
+    field = create( :field)
+    expect(Field.where(id: field.id).length).to eq(1)
+  end
+  
+  it "can not be created without a project" do
+    field = build( :field, table_id: 1)
+    expect(field).to_not be_valid
+  end
+
+  it "can be edited" do
+    field = create( :field, name:"field")
+    field.name = "change"
+    field.save
+    expect(Field.where(id: field.id).first.name).to eq("change")
+  end
+
+  it "can be deleted" do
+    field = create( :field)
+    field.destroy
+    expect(Field.where(id: field.id).length).to eq(0)
+  end
+
+  it "deletes associated fields when deleted" do
+    field = create( :field)
+    validation_assignment = create(:validation_assignment, field_id: field.id)
+    field.destroy
+    expect(ValidationAssignment.where(id: validation_assignment.id).length).to eq(0)
+  end
+
+  it "can have a given validation" do
+    field = create( :field)
+    validation = create(:validation)
+    validation_assignment = create(:validation_assignment, field_id: field.id,
+      validation_id: validation.id)
+    expect(ValidationAssignment.where(id: validation_assignment.id).first.field_id).to eq(field.id)
+  end
+
+end
+\end{lstlisting}
+
+
+
+
+
+
+
+
+
+
+
 
 \section{Chapter 6: Results and Discussion}
 
