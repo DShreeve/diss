@@ -545,7 +545,13 @@ end
 \par The design for generating a value was modified slightly due to finer details but its overall flow and princple was kept. One oversight from the design was the exclusion validation, when an exculsion validation is to be isolated it is logical to just return a random value from the list of values excluded as they will all fail the validation rather than try to randomly generate a value in the list.
 
 \par \textbf{String Generation}
-\par Random strings are generated using the 'regexp-examples'\cite{regexprangem} gem that takes a regular expression and generates and array of strings that are valid to the expression. 
+\par gen\_rand\_string\_array is the function responsible for generating random strings, it uses the 'regexp-examples'\cite{regexprangem} gem. The regexp-examples gem adds the functionality of generating a string from a regular expression that matches that expression. The max\_repeater\_variance variable is set to fifty\ref{genranstr}, this sets the amount of characters that can be generated from each subsection to the range zero to fifty, giving a good range and differnce in strings generated. Empty strings can be generated so the while loop ensures the amount of strings called in the parameters are generated and returned, empty strings are tested elsewhere as blank validation\ref{genranstr}.
+
+\begin{figure}
+\includegraphics[width=\linewidth]{screenshots/genranstr}
+\caption{gen\_rand\_string\_array}
+\label{fig:genranstr}
+\end{figure}
 \par Another gem 'to\_regexp' gem\cite{regexpstrgem} is used to 
 \subsubsection{RSpec Test Case}
 
@@ -555,131 +561,60 @@ end
 
 
 \section{Chapter 6: Results and Discussion}
-Filler text, filler text, filler text, filler text, filler text, filler text, filler text, filler text.
-\section{Chapter 7: Conclusions IGNORE THIS CHAPTER, GRAVEYARD}
 
-\par Software disasters can be caused by poor testing practices,\cite{mcquaid2012software} if the correct testing procedures practices were in place the situation would never of occured. Software testing is therefore extremely important and included in the development of all applications. However software testing "In a typical programming project approximately 50 percent of the elapsed time and more than 50 percent of the total cost were expended in testing the program or system being developed"\cite{myers2011art}, making it a huge cost of development. By automating part or the whole of the process the costs can be reduced while still obtaining all of the benefits.
+\subsection{Evaluation}
+\par Most projects lit did are too complex and dont have much validation in terms of mine
 
-\subsection{Benefits of Testing and Automation}
+\par AutoRSpec part of design process to be fully utilised, with the tests being built upon TDD. 
 
-\par Inadequate software testing infastructure was estimated to cost the US economy \$59.5 billion a year.\cite{NISTReport} It was also estimated that the potentail cost reduction from feasbile infastructure would be \$22.2 billion a year. \cite{NISTReport} Due to software disasters and the vast amount of money that can be saved and also avoid incurring additonal costs, people have become more aware of the importance of testing. The benefits of the reduced costs  comes from ihe increased reliabilty and quality of the product produced when software testing is implemented.
+\par Amahi, My software Hut, make dummies based upon those too complex with validations
 
-\par "In a typical programming project approximately 50 percent of the elapsed time and more than 50 percent of the total cost were expended in testing the program or system being developed"\cite{myers2011art}. Software testing saves you alot of money but also costs alot of money. By automating part or the whole process the costs can be reduced while still obtaining all of the benefits.
-
-
-
-\subsection{Ruby on Rails}
-\par Ruby on Rails as a framework 
-\par model as mvc
-\par Rspec to test m
-
-\subsection{Project Aims}
-\par The overall aim of this project is to reduce the cost of developing Ruby on Rails applications. The reduction in costs comes from the time saved by automatically generating test cases for the model component of the application. The develop will input a formal specification of thier database into a system from which they can download seperate files containing a test suite for each table they have defined. The files are seperated in keeping with standard Ruby on Rails practices. Once the file is downloaded it can be inserted into the application and be available to run immediatley. This project should reduce the errors and bugs in Ruby on Rails applications via the feedback from the tests generated, improving the reliablity and quality of Ruby on Rails projects via the model component.
-
-\par The derivation of information makes the test more focused on the actual implementation of the code rather than its specified behaviour. Test cases tend to be at a much finer grain than black box testing individual methods. Tests are designed to execute a particular behaviour within the program, such as testing how it handles a binary overflow.\cite{nidhra2012blackbox}\cite{young2008software}
-\subsection{Project Limitations}
-
-\par Rails and its do more with less, inline with automated testing..
-
-\par The aims of the project are to:
 \begin{enumerate}
-\item Reduce the amount of time it takes for a User to produce tests for model validation
-\item Produce tests that are of high readable quality
-\item Produce tests that fully test properties specified
-\item The process should be hassle free
+\item Remove validations, one, few, all
+\item Additional validations, supported, unsupported
+\item Unsupported validations effect
 \end{enumerate}
 
-\par Challenges that the project faces are
 \begin{enumerate}
-\item Identifying the minimum information required to produce tests
-\item Creating a process that is hassle free
-\item Natural language in tests that is appears human written
-\item Generating the tests in an acceptable time frame
-\item Building an efficent database structure for the information
+\item time taken to produce formal specification
+\item amount of test cases produced
+\item readability of failing tests
+\item readablity of test suite
+\item buildability as a foundation
 \end{enumerate}
 
-Filler text, filler text, filler text, filler text, filler text, filler text, filler text, filler text.
-Hello World!
-\subsection{subsection}
-Structuring a document is easy!! \cite{near2012rubicon}
-\subsubsection{subsubsection}
-\paragraph{p1}
-It's a me, Mario\footnote{\label{myfootnote}\cite{near2012rubicon}}.
-\subparagraph{sp1}
-Wwoohooo
-\section{image}
-\begin{figure}
-\includegraphics[width=\linewidth]{screenshots/code-gen-int-pre_divisible_keep_if}
-\caption{caption for image, shown below image}
-\label{fig:code1}
-\end{figure}
-Figure \ref{fig:code1} shows some savage code
+\par DOG FEED - biased and unscientifc, im used to system, my tests and my designed
+\par time taken for me to write my tests
+\par time taken for me to func spec
+\par time saved
+\par the amount of tests covered, any not covered, proportions
 
-	
-\begin{table}[h!]
-\centering
-\caption{Caption for the table.}
-\label{tab:table1}
-\begin{tabular}{ccc}
-\toprule
-Some & actual & content\\
-\midrule
-prettifies & the & content\\
-as & well & as\\
-using & the & booktabs package\\
-\bottomrule
-\end{tabular}
-\end{table}
+\subsection{Future}
 
-\begin{table}
-\caption{Data Types Supported}
-\label{tab:datatypessupported}
-    \begin{tabular}{|l|}
-        \hline
-        Data Type \\ \hline
-        Integer   \\ 
-        Float     \\ 
-        String    \\
-        \hline
-    \end{tabular}
-\end{table}
+\subsubsection{Improvements to current system}
 
-\begin{table}
-\caption{Integer and Float Validations Supported}
-\label{tab:integersupported}
-    \begin{tabular}{|l|}
-        \hline
-        Validation               \\ \hline
-        Blank                    \\ 
-        Inclusion                \\ 
-        Exclusion                \\ 
-        Greater Than             \\ 
-        Greater Than or Equal To \\ 
-        Equal To                 \\ 
-        Less Than or Equal To    \\ 
-        Less Than                \\ 
-        Other Than               \\ 
-        Divisible                \\
-        \hline
-    \end{tabular}
-\end{table}
+\begin{enumerate}
+\item User freindly - Conflicting rules - Error handling - Nav via heirachy line
+\item border test cases
+\item increase database fectchin efficeny
+\end{enumerate}
 
-\begin{table}
-\caption{String Validation Supported}
-\label{tab:stringsupported}
-    \begin{tabular}{|l|}
-        \hline
-        Validation     \\ \hline
-        Blank          \\ 
-        Inclusion      \\ 
-        Exclusion      \\ 
-        Minimum Length \\ 
-        Maximum Length \\ 
-        Exact Length   \\ 
-        Format         \\
-        \hline
-    \end{tabular}
-\end{table}
+\subsubsection{System additions}
+
+\begin{enumerate}
+\item more validations
+\item relations
+\item more data types
+\item generating customisabel/ all tables etc etc
+\item could use knowledge to produce factory girl skeletons
+\end{enumerate}
+
+\subsubsection{Functional Specification}
+\par Import, Export, Use it
+
+\section{Chapter 7: Conclusions}
+
+
 
 
 \bibliography{bibliography}
