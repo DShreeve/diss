@@ -2,6 +2,8 @@
 
 
 \usepackage{lscape}
+\usepackage{pbox}
+\usepackage{tabularx}
 \usepackage[parfill]{parskip}
 \usepackage{graphicx}
 \usepackage{booktabs}
@@ -253,8 +255,8 @@ First and foremost I would like to thank my supervisor \textbf{Dr. Gordon Fraser
 \begin{table}
 \centering
 \caption{Formal Specification Requirements}
-\label{my-label}
-\begin{tabular}{|l|l|l|}
+\label{req:1}
+\begin{tabularx}{\textwidth}{|l|X|l|}
 \hline
 \textbf{ID} & \textbf{Requirement}                                                   & \textbf{Priority} \\ \hline
 \textbf{1}  & A user can create a Project                                            & \textbf{M}        \\ \hline
@@ -273,14 +275,14 @@ First and foremost I would like to thank my supervisor \textbf{Dr. Gordon Fraser
 \textbf{14} & A user can view all Tables associated to a given Project               & \textbf{D}        \\ \hline
 \textbf{15} & A user can view all Fields associated to a given Table                 & \textbf{D}        \\ \hline
 \textbf{16} & A user can view all validations and values associated to a given field & \textbf{D}        \\ \hline
-\end{tabular}
+\end{tabularx}
 \end{table}
 
 \begin{table}
 \centering
 \caption{RSpec Test Case Requirements}
-\label{my-label}
-\begin{tabular}{|l|l|l|}
+\label{req:2}
+\begin{tabularx}{\textwidth}{|l|X|l|}
 \hline
 \textbf{ID} & \textbf{Requirement}                                                                                                                       & \textbf{Priority} \\ \hline
 \textbf{1}  & RSpec test case should be runnable                                                                                                         & \textbf{M}        \\ \hline
@@ -295,14 +297,14 @@ First and foremost I would like to thank my supervisor \textbf{Dr. Gordon Fraser
 \textbf{10} & Be able to generate a Float that does not satisfy a validation but satisfies all other validations and their values assigned to a field    & \textbf{M}        \\ \hline
 \textbf{11} & Be able to generate a String that satisfies all validations and their values assigned to a field                                           & \textbf{M}        \\ \hline
 \textbf{12} & Be able to generate a String that does not satisfy a validation but satisfies all other validations and their values assigned to a field   & \textbf{M}        \\ \hline
-\end{tabular}
+\end{tabularx}
 \end{table}
 
 \begin{table}
 \centering
 \caption{RSpec Test Suite Requirements}
-\label{my-label}
-\begin{tabular}{|l|l|l|}
+\label{req:3}
+\begin{tabularx}{\textwidth}{|l|X|l|}
 \hline
 \textbf{ID} & \textbf{Requirement}                                          & \textbf{Priority} \\ \hline
 \textbf{1}  & RSpec test suite should be runnable                           & \textbf{M}        \\ \hline
@@ -310,7 +312,7 @@ First and foremost I would like to thank my supervisor \textbf{Dr. Gordon Fraser
 \textbf{3}  & RSpec test cases should be grouped via field                  & \textbf{D}        \\ \hline
 \textbf{4}  & RSpec test cases should be in a logical order                 & \textbf{D}        \\ \hline
 \textbf{5}  & RSpec test suite must be available for download               & \textbf{M}        \\ \hline
-\end{tabular}
+\end{tabularx}
 \end{table}
 
 \newpage
@@ -665,6 +667,7 @@ end
 
 \par \textbf{Number Generation}
 \par Generating values for the float and integer datatypes follows the exact same methodolgy and structure as string. Therefore the slight differnce will be highlighted and infered as changes to generate\_string\_value. Numbers are randomly generated using rubys Random.rand with a range of negative one million to positive one million. The pass and fail rule functions dont have to account for the format validation but do have to account for divisible, which is accomplished by a map across the array of numbers. Also instead of comparing the length of a string with the comparorator the actual number is compared\ref{code:numsnip}. The last differnce is that the number returned does not need to be prepared like the string values.
+\par The validators equal to and other than were removed as they are supported by creating a instance of inclusion or exclusion with one entry respectively. They were removed to reduce information overload for the user and reduce conflicting options
 
 \begin{lstlisting}[frame=single,numbers=left,language = ruby,caption= {Differnce in pass/fail num rule to string pass/fail}, label={code:numsnip}]
 if rule == "divisible"
@@ -861,8 +864,20 @@ end
 
 \subsection{Testing}
 
-\par The first stage of testing was to set up the factories for the models using factory girl\cite{fgirl}. Factories allow for rapid a reliable testing using the factory to build a valid entity in test cases. In fig \ref{code:fgirl} the factory for field is shown, the power of factory girl can be seen on line 5 where the table that field is dependent upon to be created can simple be defined by refering to the table factory. All model factories were constructed using the same method disaplyed in this example.
+\par The first stage of testing was to set up the factories for the models using factory girl\cite{fgirl}. Factories allow for rapid and reliable testing using the once established factory to build a valid entity in test cases, seen on line 6 in Listing \ref{code:tabletests} . In fig \ref{code:fgirl} the factory for field is shown, the power of factory girl can be seen on line 5 where the table that field is dependent upon to be created can simple be defined by refering to the table factory. All model factories were constructed using the same method disaplyed in this example. Once the factories for each model had been defined RSpec test cases were written for requirements 1 to 12 of the functional specification requirements, see Table \ref{rq:1}, to test the functionality of the requirements, If a table can be edited and the edit is saved to the system. Table,  Listing \ref{code:tabletests}, and field, Listing \ref{code:fieldtests}, are included to show how an example of how all the rspec test cases were coded, the complete code in included in the online upload.
+\par Once the tests had been written they could all be ran at once using the 'rspec spec/lib/*.rb', the asterix wild card runs all of the tests together. Twenty six test were ran all togther and they all passed, see Figure \ref{fig:mytestresult}. However this does not completely test the requirement as it is not performed by a user, to complete the testing for the requirement the system was used as a user would peform each action and the server log, see Listing \ref{code:deltab}, was read and database was queried, see Listing \ref{code:conex} to ensure the each requirements action were carried out. The server log shows the cascade of deletions carried out due to dependencies, the console query confirms the deletion of the table and fields, employee table is no longer in the database and there are no fields in the databse as all fields in the database belonged to the employee table. This method of simulating the user action, observing server logs and querying the database was taken as the manual method for testing.
+\par  Requirements 13 to 16 of the functional specification requirements, see Table \ref{rq:1}, were tested manually. An example of how, A Project was navigated to using the website, the tables loaded in the browser, those loaded in the server logs and those queried in the console were all scrutinized to ensure that all tables for that project were loaded and only those tables. Requirement 5 in RSpec test suite 
 
+\par PUT TABLE HERE
+
+
+
+
+\begin{figure}
+\includegraphics[width=\linewidth]{screenshots/mytestresult}
+\caption{Cmd line ouput running all RSpec test on project}
+\label{fig:mytestresult}
+\end{figure}
 \begin{lstlisting}[frame=single,numbers=left,language = ruby,caption= {Factory for field}, label={code:fgirl}]
 FactoryGirl.define do
   factory :field do
@@ -960,7 +975,68 @@ describe Field do
 end
 \end{lstlisting}
 
+\begin{table}
+\centering
+\caption{Formal Specification Requirements Testing}
+\label{met:1}
+\begin{tabularx}{\textwidth}{|l|X|l|l|}
+\hline
+\textbf{ID} & \textbf{Requirement}                                                   & \textbf{Written} & \textbf{Manual} \\ \hline
+\textbf{1}  & A user can create a Project                                            & \textbf{Y} & \textbf{Y}       \\ \hline
+\textbf{2}  & A user can edit a Project                                              & \textbf{Y}  & \textbf{Y}      \\ \hline
+\textbf{3}  & A user can delete a Project, associated Tables are also deleted        & \textbf{Y}  & \textbf{Y}      \\ \hline
+\textbf{4}  & A user can create a Table, only for a given  Project                   & \textbf{Y}  & \textbf{Y}      \\ \hline
+\textbf{5}  & A user can edit a Table                                                & \textbf{Y}     & \textbf{Y}   \\ \hline
+\textbf{6}  & A user can delete a Table, associated Fields are also deleted          & \textbf{Y} & \textbf{Y}       \\ \hline
+\textbf{7}  & A user can create a Field, only for a given Table                      & \textbf{Y}   & \textbf{Y}     \\ \hline
+\textbf{8}  & A user can edit a Field                                                & \textbf{Y}    & \textbf{Y}    \\ \hline
+\textbf{9}  & A user can delete a Field, associated validations are also deleted     & \textbf{Y}      & \textbf{Y}  \\ \hline
+\textbf{10} & A user can assign a validation, only for a given Field       & \textbf{Y}    & \textbf{Y}    \\ \hline
+\textbf{11} & A user can only create a value for a assigned validation                  & \textbf{Y}      & \textbf{Y}  \\ \hline
+\textbf{12} & A user can edit a  value                      & \textbf{Y}     & \textbf{Y}   \\ \hline
+\textbf{13} & A user can view all Projects                 & \textbf{N}   & \textbf{Y}     \\ \hline
+\textbf{14} & A user can view all Tables associated to a given Project               & \textbf{N}   & \textbf{Y}     \\ \hline
+\textbf{15} & A user can view all Fields associated to a given Table                 & \textbf{N}   & \textbf{Y}     \\ \hline
+\textbf{16} & A user can view all validations and values associated to a given field & \textbf{N}    & \textbf{Y}    \\ \hline
+\end{tabularx}
+\end{table}
 
+\begin{table}
+\centering
+\caption{RSpec Test Case Requirements Testing}
+\label{met:2}
+\begin{tabularx}{\textwidth}{|l|X|l|l|}
+\hline
+\textbf{ID} & \textbf{Requirement}                                                                                                                       & \textbf{Written} & \textbf{Manual}  \\ \hline
+\textbf{1}  & RSpec test case should be runnable                                                                                                         & \textbf{N}   & \textbf{Y}     \\ \hline
+\textbf{2}  & RSpec test case should only test one behaviour                                                                                             & \textbf{N}   & \textbf{Y}       \\ \hline
+\textbf{3}  & RSpec test case must should test behaviour intended                                                                                    & \textbf{N}   & \textbf{Y}        \\ \hline
+\textbf{4}  & RSpec descriptor must be human readable                                                                                                    & \textbf{N}   & \textbf{Y}       \\ \hline
+\textbf{5}  & When test case fails, its output must specify exact behaviour at fault                                                                     & \textbf{N}   & \textbf{Y}    \\ \hline
+\textbf{6}  & RSpec test case should have human readable syntax                                                                                & \textbf{N}   & \textbf{Y}     \\ \hline
+\textbf{7}  & Be able to generate an Integer that satisfies all validations and their values assigned to a field                                         & \textbf{N}   & \textbf{Y}       \\ \hline
+\textbf{8}  & Be able to generate an Integer that does not satisfy a validation but satisfies all other validations and their values assigned to a field  & \textbf{N}   & \textbf{Y}       \\ \hline
+\textbf{9}  & Be able to generate a Float that satisfies all validations and their values assigned to a field                                             & \textbf{N}   & \textbf{Y}       \\ \hline
+\textbf{10} & Be able to generate a Float that does not satisfy a validation but satisfies all other validations and their values assigned to a field    & \textbf{N}   & \textbf{Y}  \\ \hline
+\textbf{11} & Be able to generate a String that satisfies all validations and their values assigned to a field                                            & \textbf{N}   & \textbf{Y}       \\ \hline
+\textbf{12} & Be able to generate a String that does not satisfy a validation but satisfies all other validations and their values assigned to a field    & \textbf{N}   & \textbf{Y}      \\ \hline
+\end{tabularx}
+\end{table}
+
+\begin{table}
+\centering
+\caption{RSpec Test Suite Requirements Testing}
+\label{met:3}
+\begin{tabularx}{\textwidth}{|l|X|l|l|}
+\hline
+\textbf{ID} & \textbf{Requirement}                                          & \textbf{Written} & \textbf{Manual} \\ \hline
+\textbf{1}  & RSpec test suite should be runnable                          & \textbf{N}   & \textbf{Y}       \\ \hline
+\textbf{2}  & RSpec test suite should be contain all test cases for a table  & \textbf{N}   & \textbf{Y}      \\ \hline
+\textbf{3}  & RSpec test cases should be grouped via field                 & \textbf{N}   & \textbf{Y}      \\ \hline
+\textbf{4}  & RSpec test cases should be in a logical order                 & \textbf{N}   & \textbf{Y}      \\ \hline
+\textbf{5}  & RSpec test suite must be available for download               & \textbf{N}   & \textbf{Y}     \\ \hline
+\end{tabularx}
+\end{table}
 
 
 
@@ -973,12 +1049,62 @@ end
 
 \section{Chapter 6: Results and Discussion}
 
-\subsection{Evaluation}
-\par Most projects lit did are too complex and dont have much validation in terms of mine
+\subsection{Evaluation Subject Requirements}
+\par For evaluation the following three criteria were desired, all three were not necessary but these were the main factors in choosing subjects. The criteria was chosen to similute useage of the system as close as possible and to provide the best results for analysis.
+\begin{enumerate}
+\item \textbf{A Specfication}
+\par A description of the intended program behaviour that was seperate from the code such as a design specification from which to construct the functional specification using the system. This mimics how a user will use the system.
+\item \textbf{Database}
+\par To use a mixture of validations supported and not supported on the data types supported and also have a range of table sizes. Provide a range of results for analysis.
+\item \textbf{Test cases}
+\par Have an already established suite of test cases, preferably RSpec to compare with. To compare results and analyse efficency and effectiveness.
+\end{enumerate}
 
-\par AutoRSpec part of design process to be fully utilised, with the tests being built upon TDD. 
+\cite{near2012rubicon}
+\cite{near2014derailer}
+\par Redmine, Fat Free CRM, Dispora, Amahi and Selfstarter from Derailer\cite{near2014derailer} and Inoshi, RubyTime, RubyURL and Tracks from Rubicon\cite{near2012rubicon} evaluation subjects were considered but none of them met the desried criteria to a high enough level. Therefore four tables will be constructed to be evaluated. The three tables will range in size, data types used and validations. The specification for the tables to be created are as follows:
 
-\par Amahi, My software Hut, make dummies based upon those too complex with validations
+\par \textbf{Product}
+\begin{enumerate}
+\item code : Integer
+\par  Cannot be blank, greater than 0, less than 10000 
+\item name : String
+\par Can be blank, format /{\textbackslash}A[a-zA-Z]+{\textbackslash}z/
+\item stock : Integer 
+\par Cannot be blank, greater than or equal to 0, divisible by 5
+\item price : Float 
+\par Cannot be blank, greater than 0, less than 10000 
+\end{enumerate}
+
+\par \textbf{Employee}
+\begin{enumerate}
+\item Title : String 
+\par Can be blank, Inclusion [ Miss, Mrs, Mr, Dr, Prof ]
+\item first\_name : String
+\par  minimum length 5 
+\item last\_name : String
+\par cannot be blank, maximum length 20
+\item position : String 
+\par Cannot be blank, Exclusion [ Boss, CEO ]
+\item age : Integer 
+\par greater than or equal to 0, less than or equal to 100
+\item hourly\_pay : Float 
+\par greater than or equal to 6.12, exclusion[ 23.45]
+\end{enumerate}
+
+\par \textbf{Account}
+\begin{enumerate}
+\item type : Integer
+\par  Can be blank, divisible by 63
+\item name : String
+\par Can be blank, format /{\textbackslash}A[a-zA-Z]+[\_][a-zA-Z]+{\textbackslash}z/
+\item rating : float 
+\par Cannot be blank, less than 100000, divisible by 0.01
+
+\end{enumerate}
+
+
+
 
 \begin{enumerate}
 \item Remove validations, one, few, all
@@ -1026,7 +1152,88 @@ end
 \section{Chapter 7: Conclusions}
 
 
+\appendix
+\begin{lstlisting}[frame=single,numbers=left,,caption= {Server log for deleting Employee table}, label={code:deltab}]
+#destroy as HTML
+oken"=>"tJA1Mc52lZYdmAqYnAQqOtpMpZvKp8LS/0yVeb4nAmvlj2T26Mo8sHqAFNmc78TPNEwDB0ET4xY5fDeddcrKsg==", "project_id"=>"1",
 
+  "projects".* FROM "projects" WHERE "projects"."id" = ? LIMIT 1  [["id", 1]]
+"tables".* FROM "tables" WHERE "tables"."project_id" = ? AND "tables"."id" = ? LIMIT 1  [["project_id", 1], ["id", 1]]
+
+fields".* FROM "fields" WHERE "fields"."table_id" = ?  [["table_id", 1]]
+.0ms)  SELECT "validation_assignments".* FROM "validation_assignments" WHERE "validation_assignments"."field_id" = ?
+
+"values".* FROM "values" WHERE "values"."validation_assignment_id" = ? LIMIT 1  [["validation_assignment_id", 3]]
+lues" WHERE "values"."id" = ?  [["id", 3]]
+lidation_assignments" WHERE "validation_assignments"."id" = ?  [["id", 3]]
+"values".* FROM "values" WHERE "values"."validation_assignment_id" = ? LIMIT 1  [["validation_assignment_id", 5]]
+lues" WHERE "values"."id" = ?  [["id", 5]]
+lidation_assignments" WHERE "validation_assignments"."id" = ?  [["id", 5]]
+"values".* FROM "values" WHERE "values"."validation_assignment_id" = ? LIMIT 1  [["validation_assignment_id", 6]]
+lues" WHERE "values"."id" = ?  [["id", 6]]
+lidation_assignments" WHERE "validation_assignments"."id" = ?  [["id", 6]]
+"values".* FROM "values" WHERE "values"."validation_assignment_id" = ? LIMIT 1  [["validation_assignment_id", 7]]
+lues" WHERE "values"."id" = ?  [["id", 7]]
+lidation_assignments" WHERE "validation_assignments"."id" = ?  [["id", 7]]
+elds" WHERE "fields"."id" = ?  [["id", 1]]
+.0ms)  SELECT "validation_assignments".* FROM "validation_assignments" WHERE "validation_assignments"."field_id" = ?
+
+"values".* FROM "values" WHERE "values"."validation_assignment_id" = ? LIMIT 1  [["validation_assignment_id", 8]]
+lues" WHERE "values"."id" = ?  [["id", 8]]
+lidation_assignments" WHERE "validation_assignments"."id" = ?  [["id", 8]]
+"values".* FROM "values" WHERE "values"."validation_assignment_id" = ? LIMIT 1  [["validation_assignment_id", 9]]
+lues" WHERE "values"."id" = ?  [["id", 9]]
+lidation_assignments" WHERE "validation_assignments"."id" = ?  [["id", 9]]
+elds" WHERE "fields"."id" = ?  [["id", 2]]
+.0ms)  SELECT "validation_assignments".* FROM "validation_assignments" WHERE "validation_assignments"."field_id" = ?
+
+"values".* FROM "values" WHERE "values"."validation_assignment_id" = ? LIMIT 1  [["validation_assignment_id", 1]]
+lues" WHERE "values"."id" = ?  [["id", 1]]
+lidation_assignments" WHERE "validation_assignments"."id" = ?  [["id", 1]]
+"values".* FROM "values" WHERE "values"."validation_assignment_id" = ? LIMIT 1  [["validation_assignment_id", 2]]
+lues" WHERE "values"."id" = ?  [["id", 2]]
+lidation_assignments" WHERE "validation_assignments"."id" = ?  [["id", 2]]
+"values".* FROM "values" WHERE "values"."validation_assignment_id" = ? LIMIT 1  [["validation_assignment_id", 10]]
+lues" WHERE "values"."id" = ?  [["id", 10]]
+lidation_assignments" WHERE "validation_assignments"."id" = ?  [["id", 10]]
+"values".* FROM "values" WHERE "values"."validation_assignment_id" = ? LIMIT 1  [["validation_assignment_id", 11]]
+lues" WHERE "values"."id" = ?  [["id", 11]]
+lidation_assignments" WHERE "validation_assignments"."id" = ?  [["id", 11]]
+"values".* FROM "values" WHERE "values"."validation_assignment_id" = ? LIMIT 1  [["validation_assignment_id", 12]]
+lues" WHERE "values"."id" = ?  [["id", 12]]
+lidation_assignments" WHERE "validation_assignments"."id" = ?  [["id", 12]]
+elds" WHERE "fields"."id" = ?  [["id", 3]]
+.0ms)  SELECT "validation_assignments".* FROM "validation_assignments" WHERE "validation_assignments"."field_id" = ?
+
+"values".* FROM "values" WHERE "values"."validation_assignment_id" = ? LIMIT 1  [["validation_assignment_id", 13]]
+lues" WHERE "values"."id" = ?  [["id", 13]]
+lidation_assignments" WHERE "validation_assignments"."id" = ?  [["id", 13]]
+"values".* FROM "values" WHERE "values"."validation_assignment_id" = ? LIMIT 1  [["validation_assignment_id", 14]]
+lues" WHERE "values"."id" = ?  [["id", 14]]
+lidation_assignments" WHERE "validation_assignments"."id" = ?  [["id", 14]]
+"values".* FROM "values" WHERE "values"."validation_assignment_id" = ? LIMIT 1  [["validation_assignment_id", 15]]
+lues" WHERE "values"."id" = ?  [["id", 15]]
+lidation_assignments" WHERE "validation_assignments"."id" = ?  [["id", 15]]
+elds" WHERE "fields"."id" = ?  [["id", 4]]
+bles" WHERE "tables"."id" = ?  [["id", 1]]
+
+:3000/projects/1
+ctiveRecord: 13.0ms)
+\end{lstlisting}
+\begin{lstlisting}[frame=single,numbers=left,language = ruby,caption= {Rails console query for table and field existance}, label={code:conex}]
+::1 at 2017-05-03 01:17:12 +0100
+#index as HTML
+1"}
+  "projects".* FROM "projects" WHERE "projects"."id" = ? LIMIT 1  [["id", 1]]
+tables".* FROM "tables" WHERE "tables"."project_id" = ?  [["project_id", 1]]
+rb within layouts/application (3.0ms)
+s: 63.0ms | ActiveRecord: 0.0ms)
+
+irb(main):011:0> Table.all  
+ Table Load (1.0ms)  SELECT "tables".* FROM "tables"     => #<ActiveRecord::Relation [#<Table id: 2, name: "Store", description: "Store Information", project_id: 1, created_at: "2017-04-24 22:17:38", updated_at: "2017-04-24 22:17:38">, #<Table id: 3, name: "Vehicle", description: "Vehicle Information", project_id: 1, created_at: "2017-04-24 22:17:38", updated_at: "2017-04-24 22:17:38">]> 
+irb(main):012:0> Field.all
+ Field Load (0.0ms)  SELECT "fields".* FROM "fields" => #<ActiveRecord::Relation []> 
+\end{lstlisting}
 
 \bibliography{bibliography}
 \bibliographystyle{ieeetr}
