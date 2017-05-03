@@ -35,7 +35,7 @@ All sentences or passages quoted in this report from other people's work have be
 \newpage
 \addcontentsline{toc}{section}{Abstract}
 \begin{abstract}
-Software Testing benefits the development and maintenance of a system by increasing quality and reliability. Software Testing also contributes around half of the cost of producing a system. Automating part or whole of this process reduces the cost whilst maintaining the benefits. The aim of this project is to produce a system that automatically generates RSpec test cases for model validation in Ruby on Rails. The tests will be generated from a formal database specification that the user has defined using the system. A file can be generated and inserted into the user's application and run as though they had been written by the user. The time taken to insert the necessary information should be less than the time taken to write the tests manually, otherwise the user does not benefit.
+Software Testing benefits the development and maintenance of a system by increasing quality and reliability. Software Testing also contributes around half of the cost of producing a system. Automating part or whole of this process reduces the cost whilst maintaining the benefits. The aim of this project is to produce a system that automatically generates RSpec test cases for model validation in Ruby on Rails. The tests will be generated from a formal database specification that the user has defined using the system. A file can be generated and inserted into the user's application and run as though they had been written by the user. The time taken to insert the necessary information should be less than the time taken to write the tests manually, otherwise the user will not benefit.
 \end{abstract}
 
 \newpage
@@ -52,23 +52,21 @@ First and foremost I would like to thank my supervisor \textbf{Dr. Gordon Fraser
 \section{Chapter 1: Introduction}
 
 \par How severe can the consequences be from an error in a piece of software? In 1983 a bug in a piece of software almost started World War Three.
-\vspace{5mm}
+\vspace{3mm}
 \par During the Cold War, tensions between the US and Soviet Russia were extremely high. A Soviet early warning system had detected the launch of five ballistic missiles from the US. The only reason that Soviet Russia did not retaliate, thereby starting World War Three, was the fact that Lt Col Stanislav Petrov had a "...funny feeling in my gut"\cite{ZDNetDisasters} and concluded that if the US was launching a full scale attack they would launch more than five missiles. The error in the system was discovered to be a bug in part of the software that distinguished false missiles from satellites picking up the reflection of sunlight from the top of clouds.\cite{ZDNetDisasters} If the bug in the code had falslely detected more missiles the world could be a very different place today.
-\vspace{5mm}
+\vspace{3mm}
 \par Software testing increases the relability of a system and quality, by detecting errors and bugs which can be fixed, quality can aslo be further improved by tests proving that the system meets its design requirements. However, software testing is very costly, accounting for half the time put into development of a system and half of total expenditure.\cite{myers2011art} By automating part or all of the software testing process, testing costs can be reduced, whilst maintaining the benefits.
-\vspace{5mm}
+\vspace{3mm}
 \par The motivation for this project is to bring the benefits of automated testing to Ruby on Rails. Ruby on Rails is a web application framework that allows developers to create fully functioning applications in a short of space of time. The reduction in time spent implementing increases the proportion of time spent testing. Thefore Ruby on Rails would benefit greatly from automated testing. This would further enhance the time saving feature of Ruby on Rails.
-\vspace{5mm}
+\vspace{3mm}
 \par This project aims to create a system that Ruby on Rails developers can use to reduce the development time of their projects by automatically generating all or part of the tests they require. The tests generated should not reduce the reliability and quality that manually written tests create.
 
-\par WHATS TO FOLLOW GENERAL
-
-\par WHAT CHP 2 IS ABOUT
-\par WHAT CHP 3 IS ABOUT
-\par WHAT CHP 4 IS ABOUT
-\par WHAT CHP 5 IS ABOUT
-\par WHAT CHP 6 IS ABOUT
-\par WHAT CHP 7 IS ABOUT
+\par \textbf{Chapter 2: Literature Review and Research} gives detailed background information on software testing and how it can be automated. It then follows how testing can be carried out in Ruby on Rails applications with a couple examples of existing teset automation in Ruby on Rails. Finally the chapter discusses the tools that will be used to construct this project.
+\par \textbf{Chapter 3: Requirements and Analysis} discusss how the motivation is refined into a more spefici aim and gives the objectives and requirements that the project should have to achieve this aim.
+\par \textbf{Chapter 4: Design} outlines the design of the project. Discussing and demonstrating vaarious aspects such as the database and value generation.
+\par \textbf{Chapter 5: Implementation and Testing} shows how the design was implemented in detail broken down into sections on setup, database, value generation, test case templates and the overall test suite layout. It then shows how the project was tested and how the requirements from chapter 3 are met.
+\par \textbf{Chapter 6: Results and Discussion} evaluates the project and discusses how effective the final implentation is against its aim.
+\par \textbf{Chapter 7: Conclusions} discusses various ways in which the system could be improved and its potentail to be expanded. Then is wrapped up with a conclusion on the project as a whole.
 
 
 
@@ -197,7 +195,7 @@ First and foremost I would like to thank my supervisor \textbf{Dr. Gordon Fraser
 
 \newpage
 \section{Chapter 3: Requirements and Analysis}
-\par REFINE AIM INLINE WITH LIT REVIEW TO "TO PROVIDE A SYSTEM THAT AUTOMATICALLY GENERATES MODEL TESTS IN RSPEC"
+
 \par This project started with the motivation of bringing automated testing to Ruby on Rails. From research carried out and disscussed in Chapter 2 and considering the scale of the project the way to achieve this was to focus on validation in the model component and produce RSpec test cases. A more precise description of the project is therefore \textbf{To create a system that automatically generates RSpec test cases for model validation in Ruby on Rails Applications}. To accomplish this aim there are three main aspects to the system, as follows:
 
 \begin{enumerate}
@@ -485,7 +483,7 @@ end
 \subsection{Setup}
 \par Ruby version 2.1.7 and rails 4.2.5.2 were used to construct this project.
 \par Github\cite{github} was used throughout the project to provide version control and to prevent any catastrophes. The airbnb ruby style convention was used to provide clean looking and consistent code\cite{Airbnb}. Rails new was used to instatiate the system. Then the generate scaffolfd command was used to construct the base for each table in the database schema outlined in chapter 4.1 \ref{fig:scaffold}. This sets up the default mvc components for each, the exact files created can be seen in Figure \ref{fig:scaffold}. 
-\par Regular expressions are used frequently through the implementation process, to quickly check a regular expression was serving the function expected the Rubular\cite{rubular} website was used to quickly verify them, this was not for testing but to provide further clarity on complex expressions. The gem Annotate\cite{annotate} was used to annotate the models with database information such as field names to help efficency when implementing as the information is all in the same place.
+\par Regular expressions are used frequently through the implementation process, to quickly check a regular expression was serving the function expected the Rubular\cite{rubular} website was used to quickly verify them, this was not for testing but to provide further clarity on complex expressions. The gem Annotate\cite{annotate} was used to annotate the models with database information such as field names to help efficency when implementing as the information is all in the same place. The test suites that the system produces are dependent upon the user having RSpec and factoryGirl installed, in addition the factories also have to be set up.
 
 \begin{figure}
 \includegraphics[width=\linewidth]{screenshots/scaffold_example}
@@ -866,11 +864,7 @@ end
 
 \par The first stage of testing was to set up the factories for the models using factory girl\cite{fgirl}. Factories allow for rapid and reliable testing using the once established factory to build a valid entity in test cases, seen on line 6 in Listing \ref{code:tabletests} . In fig \ref{code:fgirl} the factory for field is shown, the power of factory girl can be seen on line 5 where the table that field is dependent upon to be created can simple be defined by refering to the table factory. All model factories were constructed using the same method disaplyed in this example. Once the factories for each model had been defined RSpec test cases were written for requirements 1 to 12 of the functional specification requirements, see Table \ref{rq:1}, to test the functionality of the requirements, If a table can be edited and the edit is saved to the system. Table,  Listing \ref{code:tabletests}, and field, Listing \ref{code:fieldtests}, are included to show how an example of how all the rspec test cases were coded, the complete code in included in the online upload.
 \par Once the tests had been written they could all be ran at once using the 'rspec spec/lib/*.rb', the asterix wild card runs all of the tests together. Twenty six test were ran all togther and they all passed, see Figure \ref{fig:mytestresult}. However this does not completely test the requirement as it is not performed by a user, to complete the testing for the requirement the system was used as a user would peform each action and the server log, see Listing \ref{code:deltab}, was read and database was queried, see Listing \ref{code:conex} to ensure the each requirements action were carried out. The server log shows the cascade of deletions carried out due to dependencies, the console query confirms the deletion of the table and fields, employee table is no longer in the database and there are no fields in the databse as all fields in the database belonged to the employee table. This method of simulating the user action, observing server logs and querying the database was taken as the manual method for testing.
-\par  Requirements 13 to 16 of the functional specification requirements, see Table \ref{rq:1}, were tested manually. An example of how, A Project was navigated to using the website, the tables loaded in the browser, those loaded in the server logs and those queried in the console were all scrutinized to ensure that all tables for that project were loaded and only those tables. Requirement 5 in RSpec test suite 
-
-\par PUT TABLE HERE
-
-
+\par  Requirements 13 to 16 of the functional specification requirements, see Table \ref{rq:1}, were tested manually. An example of how, A Project was navigated to using the website, the tables loaded in the browser, those loaded in the server logs and those queried in the console were all scrutinized to ensure that all tables for that project were loaded and only those tables. Requirement 5 in RSpec test suite \ref{rq:3} was also test using this manner.
 
 
 \begin{figure}
@@ -1001,6 +995,10 @@ end
 \end{tabularx}
 \end{table}
 
+see Listing \ref{code:nice} see Figure \ref{rspecfail}
+
+\par Test case requirements, table \ref{met:2}, 1-3,5,7-12 were proved met by the Project suite, Listing \ref{code:nice} being able to run and also demonstrating being able to describe a specfifc failure occuring,  see Figure \ref{fig:rspecfailcode}. All requirements 2-12 can be observed by inspecting the Project suite, while subjective to the person inspecting there is enough evidence to justify each requirement. For example 4 and 6 require human readable text, the test cases are understandable and the behaviour under test can be inferred by reading the source code of the test cases aswell as when they are ran. 7-12 can be observed by reading the validations under test and calculating if the generated value is correct.
+
 \begin{table}
 \centering
 \caption{RSpec Test Case Requirements Testing}
@@ -1023,6 +1021,14 @@ end
 \end{tabularx}
 \end{table}
 
+\par Analysing a test suite, Listing \ref{code:nice}, produced for Products, defined in chapter 6, it can be concluded that the test cases are grouped via field and in a logical order, passing requirements 3,4 for Test suite, table \ref{met:3}. Querying the database and cross refrencing the fields and validations belonging to products between those tested in the suite requirement 2 can be confirmed to met aswell. The final requirement, 1, was validated as met by running the test suite, figure \ref{fig:runsuite}.
+
+\begin{figure}
+\includegraphics[width=\linewidth]{screenshots/runsuite}
+\caption{Result of running Product test suite}
+\label{fig:runsuite}
+\end{figure}
+
 \begin{table}
 \centering
 \caption{RSpec Test Suite Requirements Testing}
@@ -1038,13 +1044,7 @@ end
 \end{tabularx}
 \end{table}
 
-
-
-
-
-
-
-
+\par All requirements were concluded to be met, however the majority of these were done manually can can be subjective. The output of the system is fully functional and serves the purpose it intended to.
 
 
 \section{Chapter 6: Results and Discussion}
@@ -1094,49 +1094,74 @@ end
 
 \par \textbf{Account}
 \begin{enumerate}
-\item type : Integer
+\item account\_type : Integer
 \par  Can be blank, divisible by 63
 \item name : String
 \par Can be blank, format /{\textbackslash}A[a-zA-Z]+[\_][a-zA-Z]+{\textbackslash}z/
 \item rating : float 
-\par Cannot be blank, less than 100000, divisible by 0.01
+\par Cannot be blank, less than 10000, divisible by 0.1
 
 \end{enumerate}
 
+\par Once the specifcations were entered and generated, producing a total of 44 test cases for all three tables . The tests were ran there was one failure. This was the system failing to produce a float that isloated the less than 10000 field on table Account, see Figure \ref{fig:rspecfail}. However on looking at the test it is clear the test is at fault and not the users sytem under test with the error message in place of the value, see Figure \ref{fig:rspecfailcode}.
+
+\par For the first part of the evaluation mutation testing will be used, validations will be removed, altered and added and the test suites will be ran, this will demonstrate wether the test suites can pick up the missing validation. A Y in the detected column indicates the tests detected the change, whereas an N indicates they did not.
+
+\begin{table}
+\centering
+\caption{Mutation Testing}
+\label{test:1}
+\begin{tabularx}{\textwidth}{|l|X|l|l|}
+\hline
+\textbf{ID} & \textbf{Change}                                          & \textbf{Detected} \\ \hline
+\textbf{1}  & Divisible by 63 removed from Account, account\_type                       & \textbf{Y}\\ \hline
+\textbf{2}  & Divisible by 63 changed to 79 from Account, account\_type                       & \textbf{N}\\ \hline
+\textbf{3}  & Can be blank changed to can not, from Account, account\_type                       & \textbf{Y}\\ \hline
+\textbf{4}  & Tests 1 and 3 at the same time                       & \textbf{Y}\\ \hline
+\textbf{5}  & Greater than or equal to 0 removed from Product, stock & \textbf{Y}     \\ \hline
+\textbf{6}  & Exclusion removed from Employee, position                 & \textbf{Y}   \\ \hline
+\textbf{7}  & Exclusion and maximum length from Employee, position, last\_name               & \textbf{Y}     \\ \hline
+\textbf{8}  & Format /{\textbackslash}A[a-zA-Z]+{\textbackslash}z/added to Employee, first\_name              & \textbf{Y}       \\ \hline
+\textbf{9}  & Minimum Length 10 added to  Account, name             & \textbf{N}       \\ \hline
+\textbf{10}  & Uniqueness true  added to  Product, code             & \textbf{N}       \\ \hline
+\end{tabularx}
+\end{table}
+
+\begin{figure}
+\includegraphics[width=\linewidth]{screenshots/rspecfail}
+\caption{An example of a failing Rspec test case produced by the system}
+\label{fig:rspecfail}
+\end{figure}
+
+\begin{figure}
+\includegraphics[width=\linewidth]{screenshots/rspecfailcode}
+\caption{An example of a test case where a value could not be generated}
+\label{fig:rspecfailcode}
+\end{figure}
+
+\par For the second part of mutation testing the potentail effectiveness of using the system was evaluated.
+\par It took three minutes thirty seconds to construct the formal specifcation for Project, three minute fifty five seconds for Employee and two minutes and sixteen seconds for Account. Giving a total of nine minutes and thrity six seconds to construct the functional specifications on the system. The total test cases produced in all three suites was forty four, with one having not been able to generate a value, so forty three test cases. These forty three test cases  were ran and all had the desried behaviour. This gives an average of thirteen seconds to produce a valid working test case, which is a credible speed and is certainly faster than the time it takes to produce a manually written test case.
+\par The test suite and individual test cases, see Figure \ref{code:nice}, showed good readability and could be understood to a standard high enough to locate the behaviour at fault. The layout and overall structure is logical and is as expected. Thes factors show that the test suite produced could serve as an initail test file and a foundation for which more complex test are added to. The suite would be useful as the initail tests in a test driven development style of development.
 
 
+\section{Chapter 7: Conclusions}
 
-\begin{enumerate}
-\item Remove validations, one, few, all
-\item Additional validations, supported, unsupported
-\item Unsupported validations effect
-\end{enumerate}
-
-\begin{enumerate}
-\item time taken to produce formal specification
-\item amount of test cases produced
-\item readability of failing tests
-\item readablity of test suite
-\item buildability as a foundation
-\end{enumerate}
-
-\par DOG FEED - biased and unscientifc, im used to system, my tests and my designed
-\par time taken for me to write my tests
-\par time taken for me to func spec
-\par time saved
-\par the amount of tests covered, any not covered, proportions
-
-\subsection{Future}
+\subsection{System}
 
 \subsubsection{Improvements to current system}
 
+\par Some improvements that could be made to the current system are:
 \begin{enumerate}
-\item User freindly - Conflicting rules - Error handling - Nav via heirachy line
-\item border test cases
-\item increase database fectchin efficeny
+\item Level of user freindliness
+\par Currently there are no restrictions on what combinations of validations can be chosen, this allows the user to set fields with validations that have no possible valid value. This was an oversight as it was expected a user had a well designed and defined specfication. The current error handling for not generating a value is to return a string that has high visibility, this was to ensure the test suite was still generated, an improvement could be prompting the user with an error message. Navigating over two layers, e.g from value to table consists of clicking back multiple time or project then table, having the hierachy line that describes the current position as linkable, E.g can click on the table name to go to the table would improve navigation.
+\item Border cases for numerical tests
+\par Border case testing, testing 9, 10, 11 for a maximum value of 10 on a validation is a standard usually followed in automated testing but not in RSpec test cases. This could be introduced as a feature that could be toggled, some users may not want it as it would produce a lot of test cases they may not want.
+\item Database fetching efficency
+\par There a few difffern't ways of fetching data from the database in ruby. One method that isnt implemented fetches all relevant entries and stores them in cache, which can be queried further on, reducing the amount of calls to the database. The differn't methods could be consulted for each fecth to increase optimisation.
 \end{enumerate}
 
-\subsubsection{System additions}
+\subsubsection{System Expandability}
+\par Import, Export, Use it
 
 \begin{enumerate}
 \item more validations
@@ -1145,12 +1170,9 @@ end
 \item generating customisabel/ all tables etc etc
 \item could use knowledge to produce factory girl skeletons
 \end{enumerate}
+\subsection{Conclusion}
 
-\subsubsection{Functional Specification}
-\par Import, Export, Use it
-
-\section{Chapter 7: Conclusions}
-
+\par This project started out with the motivation of bringing the benefits of automated testing to Ruby on Rails. Through research it was discovered there is automated testing but it does not fit with the Test Driven  and iterational style of testing that Ruby on Rails encourages and is practiced in development of its applications. The aim was refined to creating a system that automatically generates RSpec test cases for model validation in Ruby on Rails Applications. This refined aim fit the natural development cycle of Ruby on Rails applications by automating the writing of test cases that will be written manually by a developer. The test suite generated is basic, that is it only tests for the validations attached to fields. It does however serve as a good foundation from which to add test cases to and as the start of testing in the development cycle.
 
 \appendix
 \begin{lstlisting}[frame=single,numbers=left,,caption= {Server log for deleting Employee table}, label={code:deltab}]
@@ -1233,6 +1255,132 @@ irb(main):011:0> Table.all
  Table Load (1.0ms)  SELECT "tables".* FROM "tables"     => #<ActiveRecord::Relation [#<Table id: 2, name: "Store", description: "Store Information", project_id: 1, created_at: "2017-04-24 22:17:38", updated_at: "2017-04-24 22:17:38">, #<Table id: 3, name: "Vehicle", description: "Vehicle Information", project_id: 1, created_at: "2017-04-24 22:17:38", updated_at: "2017-04-24 22:17:38">]> 
 irb(main):012:0> Field.all
  Field Load (0.0ms)  SELECT "fields".* FROM "fields" => #<ActiveRecord::Relation []> 
+\end{lstlisting}
+
+\begin{lstlisting}[frame=single,numbers=left,language = ruby,caption= {Test suite output for Product defined in chapter 6}, label={code:nice}]
+require "rails_helper"
+
+describe Product do
+
+	it "has a valid factory" do
+		expect(build(:product)).to be_valid
+	end
+
+	describe "code field has validation" do
+
+		it "can not be blank" do 
+			product = build(:product, code: nil)
+			if product.respond_to?(:valid?)
+				expect(product).to_not be_valid, lambda {product.errors.full_messages.join("\n")}
+			end
+		end
+
+		it "is valid with a generated value" do
+			product = build(:product, code: 9314)
+			if product.respond_to?(:valid?)
+				expect(product).to be_valid, lambda {product.errors.full_messages.join("\n")}
+			end
+		end
+
+		it "is invalid with a value thats is not > 0" do
+			product = build(:product, code: -487078)
+			if product.respond_to?(:valid?)
+				expect(product).to_not be_valid, lambda {product.errors.full_messages.join("\n")}
+			end
+		end
+
+		it "is invalid with a value thats is not < 10000" do
+			product = build(:product, code: 449752)
+			if product.respond_to?(:valid?)
+				expect(product).to_not be_valid, lambda {product.errors.full_messages.join("\n")}
+			end
+		end
+
+	end
+
+	describe "name field has validation" do
+
+		it "can be blank" do 
+			product = build(:product, name: nil)
+			if product.respond_to?(:valid?)
+				expect(product).to be_valid, lambda {product.errors.full_messages.join("\n")}
+			end
+		end
+
+		it "is valid with a generated value" do
+			product = build(:product, name: "XoJbfmoPkAHFv")
+			if product.respond_to?(:valid?)
+				expect(product).to be_valid, lambda {product.errors.full_messages.join("\n")}
+			end
+		end
+
+		it "is invalid with a value thats is not regex /\A[a-zA-Z]+\z/" do
+			product = build(:product, name: "CaQEWaIldTMdNiNN!'}??-@)&\"(-'*:]!'(FnahDn8DrLNY6_5u04e0jrEPQJmWX")
+			if product.respond_to?(:valid?)
+				expect(product).to_not be_valid, lambda {product.errors.full_messages.join("\n")}
+			end
+		end
+
+	end
+
+	describe "stock field has validation" do
+
+		it "can not be blank" do 
+			product = build(:product, stock: nil)
+			if product.respond_to?(:valid?)
+				expect(product).to_not be_valid, lambda {product.errors.full_messages.join("\n")}
+			end
+		end
+
+		it "is valid with a generated value" do
+			product = build(:product, stock: 902865)
+			if product.respond_to?(:valid?)
+				expect(product).to be_valid, lambda {product.errors.full_messages.join("\n")}
+			end
+		end
+
+		it "is invalid with a value thats is not >= 0" do
+			product = build(:product, stock: -140355)
+			if product.respond_to?(:valid?)
+				expect(product).to_not be_valid, lambda {product.errors.full_messages.join("\n")}
+			end
+		end
+
+		it "is invalid with a value thats is not divisible 5" do
+			product = build(:product, stock: 587473)
+			if product.respond_to?(:valid?)
+				expect(product).to_not be_valid, lambda {product.errors.full_messages.join("\n")}
+			end
+		end
+
+	end
+
+	describe "price field has validation" do
+
+		it "is valid with a generated value" do
+			product = build(:product, price: 5563.56)
+			if product.respond_to?(:valid?)
+				expect(product).to be_valid, lambda {product.errors.full_messages.join("\n")}
+			end
+		end
+
+		it "is invalid with a value thats is not > 0" do
+			product = build(:product, price: -67150.92)
+			if product.respond_to?(:valid?)
+				expect(product).to_not be_valid, lambda {product.errors.full_messages.join("\n")}
+			end
+		end
+
+		it "is invalid with a value thats is not < 10000" do
+			product = build(:product, price: 59127.4)
+			if product.respond_to?(:valid?)
+				expect(product).to_not be_valid, lambda {product.errors.full_messages.join("\n")}
+			end
+		end
+
+	end
+
+end
 \end{lstlisting}
 
 \bibliography{bibliography}
